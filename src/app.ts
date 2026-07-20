@@ -17,7 +17,7 @@ export function createApp(): express.Express {
   const app = express();
 
   app.use(helmet());
-  app.use(cors({ origin: env.corsOrigin }));
+  app.use(cors({ origin: "*" }));
   app.use(express.json({ limit: env.bodyLimit }));
   app.use(
     rateLimit({
