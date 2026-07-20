@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "API del prototipo Reclutalia (Express + TypeScript, datos en memoria).",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"

@@ -5,10 +5,14 @@ import { catalogoController } from "../controllers/catalogoController";
 import { candidatoController } from "../controllers/candidatoController";
 import { poolController } from "../controllers/poolController";
 import { formadorController, notificacionController } from "../controllers/lecturaControllers";
+import { agentController } from "../controllers/agentController";
 
 export const apiRouter = Router();
 
 apiRouter.get("/health", (_req, res) => res.json({ ok: true }));
+
+// ── Agente IA (chat por SSE) ──
+apiRouter.post("/agente/chat", agentController.chat);
 apiRouter.get("/catalogos", catalogoController.listar);
 
 apiRouter.use("/vacantes", vacanteRoutes);
