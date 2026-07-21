@@ -16,7 +16,7 @@ import { poolService } from "../services/poolService";
 import { notificacionService } from "../services/notificacionService";
 import { formadorRepository } from "../repositories/formadorRepository";
 import * as catalogs from "../constants/catalogs";
-import type { RolNotificacion } from "../types/domain";
+import type { RolNotificacion, Requisito, Candidato } from "../types/domain";
 
 export type Rol = "admin" | "formador" | "candidato";
 
@@ -46,6 +46,25 @@ const obj = (props: Record<string, unknown>, required: string[] = []) => ({
 const str = (description: string) => ({ type: "string", description });
 const int = (description: string) => ({ type: "integer", description });
 const bool = (description: string) => ({ type: "boolean", description });
+const arr = (item: "string" | "integer", description: string) => ({ type: "array", items: { type: item }, description });
+const anyObj = (description: string) => ({ type: "object", description, additionalProperties: true });
+
+/** Quita claves undefined de un objeto de "campos a cambiar". */
+const limpio = (o: Record<string, unknown>) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
+
+/** Requisito con valores por defecto; se le hace merge de los campos provistos por el LLM. */
+const defaultRequisito = (over: Record<string, unknown>): Requisito =>
+  ({
+    titulo: "Nueva vacante", area: "Operaciones", descripcion: "",
+    nivelPuesto: "Junior", anosExp: 0, educacion: "Licenciatura titulado",
+    espRequeridas: [], espOpcionales: [], hardSkills: [], softSkills: [], aptitudes: [],
+    killer: [], ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX",
+    radioKm: 25, salarioMin: 10000, salarioMax: 15000, horario: "Tiempo completo", dias: [],
+    numVacantes: 1, examenMedico: false, tipoSede: "Corporativo", sede: "", unidadNegocio: "",
+    tipoVacante: "Estándar", puedeSerSuperior: false, ubicacionNoRelevante: false,
+    expNoRelevante: false, edadMin: 18, edadMax: 65, edadNoRelevante: true,
+    ...limpio(over),
+  }) as Requisito;
 
 /** Objeto de catálogos (mismo shape que expone el endpoint /catalogos). */
 const catalogosPayload = () => ({
@@ -225,6 +244,172 @@ export const TOOLS: ToolDef[] = [
       notificacionService.marcarLeida(String(a.id));
       return { ok: true };
     },
+  },
+
+  // ─────────────── Vacantes: crear / editar / cambios ───────────────
+  {
+    name: "crear_vacante",
+    description: "Crea una vacante y la asigna a un formador. Provee al menos formadorId, titulo y area; el resto toma valores por defecto que luego se pueden editar.",
+    roles: ["admin"],
+    parameters: obj({
+      formadorId: str("ID del formador al que se asigna (ej. 'F1')"),
+      titulo: str("Título del puesto"), area: str("Área"), descripcion: str("Descripción"),
+      nivelPuesto: str("Nivel (Junior, Semi-Senior, Senior…)"), anosExp: int("Años de experiencia"),
+      salarioMin: int("Sueldo mínimo mensual MXN"), salarioMax: int("Sueldo máximo mensual MXN"),
+      ubicacionTrabajo: str("Ciudad"), modalidad: str("Presencial | Híbrido | Remoto"), numVacantes: int("Nº de plazas"),
+    }, ["formadorId", "titulo", "area"]),
+    run: (a) => {
+      const { formadorId, ...campos } = a;
+      return vacanteService.crear(defaultRequisito(campos), String(formadorId));
+    },
+  },
+  {
+    name: "editar_vacante",
+    description: "Edita el descriptivo de una vacante (merge de los campos indicados sobre el requisito actual).",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), campos: anyObj("Campos del requisito a modificar (titulo, area, salarioMin, etc.)"), nota: str("Nota opcional") }, ["vacId", "campos"]),
+    run: (a) => {
+      const actual = vacanteService.obtener(String(a.vacId));
+      const req = { ...actual.req, ...limpio(a.campos as Record<string, unknown>) } as Requisito;
+      return vacanteService.editar(String(a.vacId), req, [], a.nota ? String(a.nota) : "");
+    },
+  },
+  {
+    name: "solicitar_cambios",
+    description: "El formador solicita cambios en el descriptivo de una vacante.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cambios: str("Descripción de los cambios solicitados") }, ["vacId", "cambios"]),
+    run: (a) => vacanteService.solicitarCambios(String(a.vacId), String(a.cambios)),
+  },
+
+  // ─────────────── Candidato: perfil ───────────────
+  {
+    name: "guardar_candidato",
+    description: "Actualiza el perfil de un candidato (merge de los campos indicados). El candidato solo puede editar el suyo.",
+    roles: ["admin", "formador", "candidato"],
+    parameters: obj({ id: int("ID candidato (admin/formador; el candidato usa el suyo)"), campos: anyObj("Campos a modificar (nombre, puesto, resumen, email, tel, etc.)") }, ["campos"]),
+    run: (a, ctx) => {
+      const id = ctx.rol === "candidato" ? Number(ctx.candId) : Number(a.id);
+      const actual = candidatoService.obtener(id);
+      const merged = { ...actual, ...limpio(a.campos as Record<string, unknown>), id } as Candidato;
+      return candidatoService.guardar(merged);
+    },
+  },
+  {
+    name: "completar_psicometrico",
+    description: "Marca como completado el examen psicométrico de un candidato.",
+    roles: ["admin", "formador", "candidato"],
+    parameters: obj({ id: int("ID candidato (admin/formador; el candidato usa el suyo)") }),
+    run: (a, ctx) => candidatoService.completarPsicometrico(ctx.rol === "candidato" ? Number(ctx.candId) : Number(a.id)),
+  },
+
+  // ─────────────── Pool del formador: favoritos y categorías ───────────────
+  {
+    name: "fav_candidato_pool",
+    description: "Marca/desmarca un candidato como favorito del formador (pool global).",
+    roles: ["admin", "formador"],
+    parameters: obj({ formadorId: str("ID formador (por defecto el actual)"), cid: int("ID candidato") }, ["cid"]),
+    run: (a, ctx) => poolService.toggleFavCand(String(a.formadorId ?? ctx.formadorId), Number(a.cid)),
+  },
+  {
+    name: "crear_categoria",
+    description: "Crea una categoría en el pool del formador.",
+    roles: ["admin", "formador"],
+    parameters: obj({ formadorId: str("ID formador (por defecto el actual)"), nombre: str("Nombre de la categoría") }, ["nombre"]),
+    run: (a, ctx) => poolService.crearCategoria(String(a.formadorId ?? ctx.formadorId), String(a.nombre)),
+  },
+  {
+    name: "toggle_categoria",
+    description: "Agrega o quita un candidato de una categoría del pool del formador.",
+    roles: ["admin", "formador"],
+    parameters: obj({ formadorId: str("ID formador (por defecto el actual)"), nombre: str("Categoría"), cid: int("ID candidato") }, ["nombre", "cid"]),
+    run: (a, ctx) => poolService.toggleCategoria(String(a.formadorId ?? ctx.formadorId), String(a.nombre), Number(a.cid)),
+  },
+
+  // ─────────────── Pipeline: pasos restantes ───────────────
+  {
+    name: "aplicar_candidato",
+    description: "Registra que el candidato acepta la invitación (confirma preguntas killer).",
+    roles: ["candidato", "formador", "admin"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)"), killersOk: bool("¿Cumple las preguntas killer?") }, ["vacId"]),
+    run: (a, ctx) => pipelineService.aplicar(String(a.vacId), Number(a.cid ?? ctx.candId), a.killersOk ?? true),
+  },
+  {
+    name: "enviar_slots",
+    description: "Envía horarios de entrevista a uno o varios candidatos de una vacante.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cids: arr("integer", "IDs de candidatos"), slots: arr("string", "Horarios propuestos"), modalidad: str("Presencial | Videollamada") }, ["vacId", "cids", "slots", "modalidad"]),
+    run: (a) => pipelineService.enviarSlots(String(a.vacId), (a.cids as number[]).map(Number), (a.slots as string[]).map(String), String(a.modalidad)),
+  },
+  {
+    name: "docs_filtro_listos",
+    description: "Marca como listos los documentos de filtro inicial del candidato.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.docsFiltroListos(String(a.vacId), Number(a.cid)),
+  },
+  {
+    name: "video_ia",
+    description: "Ejecuta/registra la video-entrevista con IA del candidato.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.videoIA(String(a.vacId), Number(a.cid)),
+  },
+  {
+    name: "registrar_entrevista",
+    description: "Registra el resultado de la entrevista del formador con el candidato.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), resumen: str("Resumen"), feedback: str("Feedback"), externa: bool("¿Entrevista externa?"), calificacion: int("Calificación 1-10") }, ["vacId", "cid", "resumen", "feedback", "externa", "calificacion"]),
+    run: (a) => pipelineService.registrarEntrevista(String(a.vacId), Number(a.cid), { resumen: String(a.resumen), feedback: String(a.feedback), externa: !!a.externa, calificacion: Number(a.calificacion) }),
+  },
+  {
+    name: "agendar_medico",
+    description: "Agenda el examen médico del candidato (sede y fecha).",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), estado: str("Estado"), ciudad: str("Ciudad"), municipio: str("Municipio"), sucursal: str("Sucursal médica"), fecha: str("Fecha YYYY-MM-DD") }, ["vacId", "cid", "estado", "ciudad", "municipio", "sucursal", "fecha"]),
+    run: (a) => pipelineService.agendarMedico(String(a.vacId), Number(a.cid), { estado: String(a.estado), ciudad: String(a.ciudad), municipio: String(a.municipio), sucursal: String(a.sucursal), fecha: String(a.fecha) }),
+  },
+  {
+    name: "validar_medico",
+    description: "Marca como validado el examen médico del candidato.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.validarMedico(String(a.vacId), Number(a.cid)),
+  },
+  {
+    name: "recordar_docs",
+    description: "Envía al candidato un recordatorio de los documentos pendientes.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.recordarDocs(String(a.vacId), Number(a.cid)),
+  },
+  {
+    name: "set_doc_contrato",
+    description: "Registra un documento de contratación del candidato (clave = tipo de doc, valor = referencia/nombre).",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), key: str("Tipo de documento (ine, curp, rfc, domicilio, estudios…)"), value: str("Referencia o nombre del archivo") }, ["vacId", "cid", "key", "value"]),
+    run: (a) => pipelineService.setDocContrato(String(a.vacId), Number(a.cid), String(a.key), String(a.value)),
+  },
+  {
+    name: "set_cuenta_banco",
+    description: "Registra la cuenta bancaria del candidato para nómina.",
+    roles: ["candidato", "formador", "admin"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)"), cuenta: str("Número de cuenta / CLABE") }, ["vacId", "cuenta"]),
+    run: (a, ctx) => pipelineService.setCuentaBanco(String(a.vacId), Number(a.cid ?? ctx.candId), String(a.cuenta)),
+  },
+  {
+    name: "docs_contrato_listos",
+    description: "Marca como completos los documentos de contratación del candidato.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.docsContratoListos(String(a.vacId), Number(a.cid)),
+  },
+  {
+    name: "simular_candidato",
+    description: "(Demo) Simula la respuesta/avance del candidato en el pipeline para probar el flujo.",
+    roles: ["admin", "formador", "candidato"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)") }, ["vacId"]),
+    run: (a, ctx) => pipelineService.simular(String(a.vacId), Number(a.cid ?? ctx.candId)),
   },
 ];
 

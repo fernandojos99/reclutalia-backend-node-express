@@ -10,7 +10,8 @@ const toInt = (value: string | undefined, fallback: number): number => {
 export const env = {
   port: toInt(process.env.PORT, 4000),
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
-  bodyLimit: process.env.BODY_LIMIT ?? "1mb",
+  // Subida de archivos (base64 en el JSON): se sube el límite para que quepan.
+  bodyLimit: process.env.BODY_LIMIT ?? "6mb",
   rateLimitWindowMs: toInt(process.env.RATE_LIMIT_WINDOW_MS, 60_000),
   rateLimitMax: toInt(process.env.RATE_LIMIT_MAX, 120),
   isProduction: process.env.NODE_ENV === "production",
@@ -20,4 +21,9 @@ export const env = {
   deepseekApiKey: process.env.DEEPSEEK_API_KEY ?? "",
   deepseekBaseUrl: process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com",
   deepseekModel: process.env.DEEPSEEK_MODEL ?? "deepseek-chat",
+
+  // ── Base de datos (Supabase Postgres vía pooler) ──
+  // Cadena de conexión completa (postgresql://...). Si está vacía, el backend funciona
+  // con la semilla en memoria (sin persistencia), útil para desarrollo sin BD.
+  dbUrl: process.env.DATABASE_URL ?? "",
 } as const;
