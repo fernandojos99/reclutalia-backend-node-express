@@ -8,10 +8,17 @@ import { uid, hoy, hora } from "../utils/format";
 
 export const notificacionService = {
   emitir(para: DestinatarioNotificacion, titulo: string, msg: string, vacId: string): void {
-    notificacionRepository.insert({
+    this.crear(para, titulo, msg, vacId);
+  },
+
+  /** Crea una notificación y la devuelve (versión con retorno de `emitir`). */
+  crear(para: DestinatarioNotificacion, titulo: string, msg: string, vacId: string): Notificacion {
+    const notif: Notificacion = {
       id: uid("N"), para, titulo, msg, vacId,
       fecha: `${hoy()} · ${hora()}`, leida: false,
-    });
+    };
+    notificacionRepository.insert(notif);
+    return notif;
   },
 
   listar(tipo: RolNotificacion, id: string | number): Notificacion[] {
@@ -24,5 +31,11 @@ export const notificacionService = {
 
   marcarLeida(id: string): void {
     notificacionRepository.markAsRead(id);
+  },
+
+  /** Elimina una notificación por id. */
+  eliminar(id: string): { ok: true } {
+    notificacionRepository.remove(id);
+    return { ok: true };
   },
 };

@@ -18,19 +18,28 @@ apiRouter.get("/catalogos", catalogoController.listar);
 
 apiRouter.use("/vacantes", vacanteRoutes);
 
-// ── Candidatos ──
+// ── Candidatos (CRUD) ──
 apiRouter.get("/candidatos", candidatoController.listar);
+apiRouter.post("/candidatos", candidatoController.crear);
 apiRouter.get("/candidatos/:id", candidatoController.obtener);
 apiRouter.put("/candidatos/:id", candidatoController.guardar);
+apiRouter.delete("/candidatos/:id", candidatoController.eliminar);
 apiRouter.post("/candidatos/:id/psicometrico", candidatoController.completarPsicometrico);
 apiRouter.post("/candidatos/:id/favoritos/:vacId", candidatoController.toggleFavVacante);
 
-// ── Formadores (incluye pool global: favoritos y categorías) ──
+// ── Formadores (CRUD + pool global: favoritos y categorías) ──
 apiRouter.get("/formadores", formadorController.listar);
+apiRouter.post("/formadores", formadorController.crear);
+apiRouter.get("/formadores/:id", formadorController.obtener);
+apiRouter.put("/formadores/:id", formadorController.actualizar);
+apiRouter.delete("/formadores/:id", formadorController.eliminar);
 apiRouter.post("/formadores/:id/favoritos/:cid", poolController.toggleFavCand);
 apiRouter.post("/formadores/:id/categorias", poolController.crearCategoria);
 apiRouter.post("/formadores/:id/categorias/:nombre/:cid", poolController.toggleCategoria);
+apiRouter.delete("/formadores/:id/categorias/:nombre", poolController.eliminarCategoria);
 
-// ── Notificaciones ──
+// ── Notificaciones (CRUD) ──
 apiRouter.get("/notificaciones", notificacionController.listar);
+apiRouter.post("/notificaciones", notificacionController.crear);
 apiRouter.post("/notificaciones/:id/leida", notificacionController.marcarLeida);
+apiRouter.delete("/notificaciones/:id", notificacionController.eliminar);

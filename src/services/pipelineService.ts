@@ -413,4 +413,12 @@ export const pipelineService = {
     }
     return v;
   },
+
+  /** Quita a un candidato del pipeline de una vacante (elimina su entrada). */
+  quitarDelPipeline(vacId: string, cid: number): Vacante {
+    const v = obtenerVacante(vacId);
+    obtenerPipeline(v, cid); // lanza si no está en el pipeline
+    delete v.pipeline[cid];
+    return v;
+  },
 };

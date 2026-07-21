@@ -27,4 +27,10 @@ export const poolController = {
       res.json(poolService.toggleCategoria(req.params.id, nombre, parseNumericId(req.params.cid)));
     } catch (err) { next(err); }
   },
+  eliminarCategoria(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const nombre = decodeURIComponent(req.params.nombre);
+      res.json(poolService.eliminarCategoria(req.params.id, nombre));
+    } catch (err) { next(err); }
+  },
 };

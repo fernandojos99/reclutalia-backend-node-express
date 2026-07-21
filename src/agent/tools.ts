@@ -14,6 +14,7 @@ import { pipelineService } from "../services/pipelineService";
 import { candidatoService } from "../services/candidatoService";
 import { poolService } from "../services/poolService";
 import { notificacionService } from "../services/notificacionService";
+import { formadorService } from "../services/formadorService";
 import { formadorRepository } from "../repositories/formadorRepository";
 import * as catalogs from "../constants/catalogs";
 import type { RolNotificacion, Requisito, Candidato } from "../types/domain";
@@ -410,6 +411,88 @@ export const TOOLS: ToolDef[] = [
     roles: ["admin", "formador", "candidato"],
     parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)") }, ["vacId"]),
     run: (a, ctx) => pipelineService.simular(String(a.vacId), Number(a.cid ?? ctx.candId)),
+  },
+
+  // ─────────────── CRUD extra: create / delete de recursos ───────────────
+  {
+    name: "crear_candidato",
+    description: "Crea un candidato nuevo en el pool (id autogenerado). Provee los campos que conozcas; el resto toma valores por defecto.",
+    roles: ["admin"],
+    parameters: obj({ datos: anyObj("Campos del candidato (nombre, area, puesto, nivel, ciudad, esp, hard, email, tel, etc.)") }, ["datos"]),
+    run: (a) => candidatoService.crear(limpio(a.datos as Record<string, unknown>)),
+  },
+  {
+    name: "eliminar_candidato",
+    description: "Elimina un candidato del pool y limpia sus referencias en vacantes y formadores.",
+    roles: ["admin"],
+    parameters: obj({ id: int("ID del candidato") }, ["id"]),
+    run: (a) => candidatoService.eliminar(Number(a.id)),
+  },
+  {
+    name: "eliminar_vacante",
+    description: "Elimina una vacante y la quita de los favoritos de los candidatos.",
+    roles: ["admin"],
+    parameters: obj({ vacId: str("ID de la vacante") }, ["vacId"]),
+    run: (a) => vacanteService.eliminar(String(a.vacId)),
+  },
+  {
+    name: "obtener_formador",
+    description: "Devuelve el detalle de un formador por su id.",
+    roles: ["admin", "formador"],
+    parameters: obj({ id: str("ID del formador (ej. 'F1')") }, ["id"]),
+    run: (a, ctx) => formadorService.obtener(String(a.id ?? ctx.formadorId)),
+  },
+  {
+    name: "crear_formador",
+    description: "Crea un formador de equipo nuevo (id autogenerado F1, F2…).",
+    roles: ["admin"],
+    parameters: obj({ nombre: str("Nombre"), puesto: str("Puesto"), area: str("Área") }, ["nombre"]),
+    run: (a) => formadorService.crear(limpio({ nombre: a.nombre, puesto: a.puesto, area: a.area })),
+  },
+  {
+    name: "actualizar_formador",
+    description: "Actualiza los datos de un formador (merge de los campos indicados).",
+    roles: ["admin"],
+    parameters: obj({ id: str("ID del formador"), campos: anyObj("Campos a modificar (nombre, puesto, area)") }, ["id", "campos"]),
+    run: (a) => formadorService.actualizar(String(a.id), limpio(a.campos as Record<string, unknown>)),
+  },
+  {
+    name: "eliminar_formador",
+    description: "Elimina un formador de equipo.",
+    roles: ["admin"],
+    parameters: obj({ id: str("ID del formador") }, ["id"]),
+    run: (a) => formadorService.eliminar(String(a.id)),
+  },
+  {
+    name: "crear_notificacion",
+    description: "Crea una notificación dirigida a un destinatario (formador/candidato/admin).",
+    roles: ["admin"],
+    parameters: obj({
+      tipoDest: str("'formador' | 'candidato' | 'admin'"), idDest: str("ID del destinatario"),
+      titulo: str("Título"), msg: str("Mensaje"), vacId: str("ID de vacante relacionada (opcional)"),
+    }, ["tipoDest", "idDest", "titulo", "msg"]),
+    run: (a) => notificacionService.crear({ tipo: a.tipoDest as Rol, id: String(a.idDest) }, String(a.titulo), String(a.msg), String(a.vacId ?? "")),
+  },
+  {
+    name: "eliminar_notificacion",
+    description: "Elimina una notificación por id.",
+    roles: ["admin", "formador", "candidato"],
+    parameters: obj({ id: str("ID de la notificación") }, ["id"]),
+    run: (a) => notificacionService.eliminar(String(a.id)),
+  },
+  {
+    name: "eliminar_categoria",
+    description: "Elimina una categoría del pool del formador.",
+    roles: ["admin", "formador"],
+    parameters: obj({ formadorId: str("ID formador (por defecto el actual)"), nombre: str("Categoría a eliminar") }, ["nombre"]),
+    run: (a, ctx) => poolService.eliminarCategoria(String(a.formadorId ?? ctx.formadorId), String(a.nombre)),
+  },
+  {
+    name: "quitar_del_pipeline",
+    description: "Quita a un candidato del pipeline de una vacante (elimina su entrada).",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.quitarDelPipeline(String(a.vacId), Number(a.cid)),
   },
 ];
 

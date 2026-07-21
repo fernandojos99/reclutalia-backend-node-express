@@ -138,4 +138,14 @@ export const vacanteService = {
     );
     return v;
   },
+
+  /** Elimina una vacante y la quita de los favoritos de los candidatos (cascade ligero). */
+  eliminar(vacId: string): { ok: true } {
+    obtenerVacante(vacId); // lanza si no existe
+    for (const c of candidatoRepository.findAll()) {
+      if (c.favoritos) c.favoritos = c.favoritos.filter((x) => x !== vacId);
+    }
+    vacanteRepository.remove(vacId);
+    return { ok: true };
+  },
 };

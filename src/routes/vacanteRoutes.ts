@@ -14,6 +14,7 @@ vacanteRoutes.patch("/:id", vacanteController.editar);
 vacanteRoutes.post("/:id/cambios", vacanteController.solicitarCambios);
 vacanteRoutes.post("/:id/aprobar", vacanteController.aprobar);
 vacanteRoutes.post("/:id/solicitar-mas", vacanteController.solicitarMas);
+vacanteRoutes.delete("/:id", vacanteController.eliminar);
 
 // ── Pool de talento del formador ──
 vacanteRoutes.post("/:id/archivar/:cid", poolController.archivarCand);
@@ -25,6 +26,7 @@ vacanteRoutes.post("/:id/postular/:cid", pipelineController.postularDirecto);
 vacanteRoutes.post("/:id/slots", pipelineController.enviarSlots);
 
 // ── Pipeline por candidato ──
+vacanteRoutes.delete("/:id/pipeline/:cid", pipelineController.quitar);
 vacanteRoutes.post("/:id/pipeline/:cid/invitar", pipelineController.invitar);
 vacanteRoutes.post("/:id/pipeline/:cid/aplicar", pipelineController.aplicar);
 vacanteRoutes.post("/:id/pipeline/:cid/rechazar", pipelineController.rechazar);

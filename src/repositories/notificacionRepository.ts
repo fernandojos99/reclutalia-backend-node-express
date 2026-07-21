@@ -23,4 +23,12 @@ export const notificacionRepository = {
     const n = store.notificaciones.find((x) => x.id === id);
     if (n) n.leida = true;
   },
+
+  /** Elimina una notificación por id. Devuelve true si existía. */
+  remove(id: string): boolean {
+    const i = store.notificaciones.findIndex((x) => x.id === id);
+    if (i < 0) return false;
+    store.notificaciones.splice(i, 1);
+    return true;
+  },
 };

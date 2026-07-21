@@ -56,4 +56,11 @@ export const poolService = {
     if (cat) cat.cids = toggle(cat.cids, cid);
     return f;
   },
+
+  /** Elimina una categoría del formador. */
+  eliminarCategoria(formadorId: string, nombre: string): Formador {
+    const f = obtenerFormador(formadorId);
+    if (f.categorias) f.categorias = f.categorias.filter((c) => c.nombre !== nombre);
+    return f;
+  },
 };

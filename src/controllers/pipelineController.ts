@@ -121,4 +121,9 @@ export const pipelineController = {
       res.json(pipelineService.simular(vac(req), cand(req)));
     } catch (err) { next(err); }
   },
+  quitar(req: Request, res: Response, next: NextFunction): void {
+    try {
+      res.json(pipelineService.quitarDelPipeline(vac(req), cand(req)));
+    } catch (err) { next(err); }
+  },
 };

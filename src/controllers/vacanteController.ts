@@ -66,4 +66,10 @@ export const vacanteController = {
       res.json(vacanteService.solicitarMasCandidatos(req.params.id, multiposting));
     } catch (err) { next(err); }
   },
+
+  eliminar(req: Request, res: Response, next: NextFunction): void {
+    try {
+      res.json(vacanteService.eliminar(req.params.id));
+    } catch (err) { next(err); }
+  },
 };

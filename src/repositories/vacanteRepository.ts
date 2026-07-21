@@ -23,4 +23,12 @@ export const vacanteRepository = {
     store.vacantes.unshift(vacante);
     return vacante;
   },
+
+  /** Elimina una vacante por id. Devuelve true si existía. */
+  remove(id: string): boolean {
+    const i = store.vacantes.findIndex((v) => v.id === id);
+    if (i < 0) return false;
+    store.vacantes.splice(i, 1);
+    return true;
+  },
 };
