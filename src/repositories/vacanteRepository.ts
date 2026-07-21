@@ -18,6 +18,14 @@ export const vacanteRepository = {
     return store.vacantes.filter((v) => v.formadorId === formadorId);
   },
 
+  /** Siguiente id de vacante derivado de los datos ("V-" + max numérico existente + 1). */
+  nextId(): string {
+    const nums = store.vacantes
+      .map((v) => Number(String(v.id).replace(/^V-?/, "")))
+      .filter((n) => Number.isFinite(n));
+    return `V-${(nums.length ? Math.max(...nums) : 1000) + 1}`;
+  },
+
   /** Inserta al inicio (como `unshift` del front). */
   insert(vacante: Vacante): Vacante {
     store.vacantes.unshift(vacante);

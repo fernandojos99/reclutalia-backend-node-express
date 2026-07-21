@@ -11,7 +11,7 @@ import { notificacionService } from "./notificacionService";
 import { buildPool } from "./matchService";
 import { NotFoundError } from "../errors/AppError";
 import { CAMPOS_DESC } from "../constants/catalogs";
-import { uid, hoy } from "../utils/format";
+import { hoy } from "../utils/format";
 import type { Cambios, Requisito, Vacante } from "../types/domain";
 
 function obtenerVacante(vacId: string): Vacante {
@@ -56,7 +56,7 @@ export const vacanteService = {
     if (!formador) throw new NotFoundError(`Formador ${formadorId} no encontrado`);
 
     const vacante: Vacante = {
-      id: uid("V-2"), estado: "asignada", formadorId, creada: hoy(), req: coercionarReq(req),
+      id: vacanteRepository.nextId(), estado: "asignada", formadorId, creada: hoy(), req: coercionarReq(req),
       pipeline: {}, historial: [`Creada por el administrador el ${hoy()}`], cambios: null, archivados: [],
     };
     vacanteRepository.insert(vacante);

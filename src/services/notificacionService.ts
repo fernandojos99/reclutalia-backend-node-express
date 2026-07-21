@@ -4,7 +4,7 @@
  */
 import { notificacionRepository } from "../repositories/notificacionRepository";
 import type { DestinatarioNotificacion, Notificacion, RolNotificacion } from "../types/domain";
-import { uid, hoy, hora } from "../utils/format";
+import { hoy, hora } from "../utils/format";
 
 export const notificacionService = {
   emitir(para: DestinatarioNotificacion, titulo: string, msg: string, vacId: string): void {
@@ -14,7 +14,7 @@ export const notificacionService = {
   /** Crea una notificación y la devuelve (versión con retorno de `emitir`). */
   crear(para: DestinatarioNotificacion, titulo: string, msg: string, vacId: string): Notificacion {
     const notif: Notificacion = {
-      id: uid("N"), para, titulo, msg, vacId,
+      id: notificacionRepository.nextId(), para, titulo, msg, vacId,
       fecha: `${hoy()} · ${hora()}`, leida: false,
     };
     notificacionRepository.insert(notif);

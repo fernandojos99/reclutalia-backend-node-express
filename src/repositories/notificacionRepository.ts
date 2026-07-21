@@ -7,6 +7,14 @@ export const notificacionRepository = {
     return store.notificaciones;
   },
 
+  /** Siguiente id de notificación derivado de los datos ("N" + max numérico existente + 1). */
+  nextId(): string {
+    const nums = store.notificaciones
+      .map((n) => Number(String(n.id).replace(/^N/, "")))
+      .filter((v) => Number.isFinite(v));
+    return `N${(nums.length ? Math.max(...nums) : 100) + 1}`;
+  },
+
   /** Notificaciones dirigidas a un destinatario (rol + id). */
   findByDestinatario(tipo: RolNotificacion, id: string | number): Notificacion[] {
     return store.notificaciones.filter(
