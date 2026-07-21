@@ -99,6 +99,8 @@ export interface Requisito {
   radioKm: number;
   salarioMin: number;
   salarioMax: number;
+  /** Sueldo mensual único que se muestra en el descriptivo (default: punto medio del rango). */
+  sueldo?: number;
   horario: string;
   dias: string[];
   numVacantes: number;

@@ -23,7 +23,7 @@ function crearCandidato(
 
 /** Factory del descriptivo (equivale a `mkReq(o)` del front). */
 export function crearRequisito(overrides: Partial<Requisito>): Requisito {
-  return {
+  const req: Requisito = {
     titulo: "", area: AREAS[0], descripcion: "", nivelPuesto: "Junior", anosExp: 1,
     educacion: "Licenciatura titulado", espRequeridas: [], espOpcionales: [], hardSkills: [],
     softSkills: [], aptitudes: [], killer: [], ubicacionTrabajo: "CDMX", modalidad: "Presencial",
@@ -33,6 +33,9 @@ export function crearRequisito(overrides: Partial<Requisito>): Requisito {
     puedeSerSuperior: false, ubicacionNoRelevante: false, expNoRelevante: false,
     edadMin: 18, edadMax: 65, edadNoRelevante: false, ...overrides,
   };
+  // Sueldo mensual único (default: punto medio del rango, redondeado a 500).
+  if (req.sueldo == null) req.sueldo = Math.round((req.salarioMin + req.salarioMax) / 2 / 500) * 500;
+  return req;
 }
 
 const C = crearCandidato;
