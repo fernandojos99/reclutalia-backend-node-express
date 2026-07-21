@@ -1,17 +1,34 @@
 /**
- * Puente entre el store en memoria y Postgres.
+ * Puente entre el store en memoria y Postgres (modo "siempre fresco").
  *
- * Estrategia (prototipo): el store en memoria sigue siendo la fuente que leen repos/servicios
- * (que mutan objetos vivos). Al arrancar se HIDRATA desde la BD; tras cada escritura se hace
- * WRITE-THROUGH (upsert de todo el store). Así no hay que reescribir servicios a async.
+ * Flujo por request (ver app.ts):
+ *   1. refreshStore(): re-hidrata el store desde la BD → datos siempre actuales (sin caché stale
+ *      ni clobbering entre instancias serverless).
+ *   2. En escrituras: snapshotStore() captura el estado ANTES de mutar; tras responder,
+ *      persistChanged() hace upsert SOLO de las entidades que cambiaron (diff por JSON).
  *
  * Sin DATABASE_URL, todo esto es no-op y el backend usa la semilla en memoria.
+ *
+ * Nota (prototipo): el `store` es global; bajo alta concurrencia dentro de una misma instancia
+ * dos requests podrían pisarse (refresh/mutación intercalados). Para el volumen de la demo es
+ * aceptable; una versión productiva usaría acceso por-entidad o transacciones a nivel de request.
  */
-import { sql, dbEnabled } from "./client";
+import { sql } from "./client";
 import { store } from "../data/store";
+import type { Candidato, Formador, Vacante, Notificacion } from "../types/domain";
 
-/** Carga las 4 colecciones desde la BD al store en memoria. */
-export async function hydrateFromDb(): Promise<void> {
+/** Snapshot id→JSON de cada colección, para detectar qué cambió en un request. */
+export interface Snapshot {
+  candidatos: Map<number, string>;
+  formadores: Map<string, string>;
+  vacantes: Map<string, string>;
+  notificaciones: Map<string, string>;
+}
+
+let avisoVacio = false;
+
+/** Re-hidrata las 4 colecciones desde la BD al store en memoria. Se llama en cada request. */
+export async function refreshStore(): Promise<void> {
   if (!sql) return;
   const [cands, forms, vacs, notifs] = await Promise.all([
     sql`select data from candidatos order by id desc`,
@@ -20,61 +37,64 @@ export async function hydrateFromDb(): Promise<void> {
     sql`select data from notificaciones`,
   ]);
 
-  const total = cands.length + forms.length + vacs.length + notifs.length;
-  if (total === 0) {
-    // BD vacía: conservamos la semilla en memoria y avisamos. Corre `npm run db:seed`
-    // para poblar la BD (o la primera escritura la persistirá automáticamente).
-    console.warn("[db] Las tablas están vacías. Ejecuta `npm run db:seed` para poblarlas.");
-    return;
+  if (cands.length + forms.length + vacs.length + notifs.length === 0) {
+    if (!avisoVacio) {
+      console.warn("[db] Las tablas están vacías. Ejecuta `npm run db:seed` para poblarlas.");
+      avisoVacio = true;
+    }
+    return; // conserva la semilla en memoria
   }
 
-  store.candidatos = cands.map((r) => r.data);
-  store.formadores = forms.map((r) => r.data);
-  store.vacantes = vacs.map((r) => r.data);
-  store.notificaciones = notifs.map((r) => r.data);
-  console.log(`[db] Store hidratado desde Supabase (${store.candidatos.length} candidatos, ${store.vacantes.length} vacantes).`);
+  store.candidatos = cands.map((r) => r.data as Candidato);
+  store.formadores = forms.map((r) => r.data as Formador);
+  store.vacantes = vacs.map((r) => r.data as Vacante);
+  store.notificaciones = notifs.map((r) => r.data as Notificacion);
 }
 
-/** Hidratación memoizada: se ejecuta una sola vez por proceso. */
-let hydrating: Promise<void> | null = null;
-export function ensureHydrated(): Promise<void> {
-  if (!dbEnabled) return Promise.resolve();
-  if (!hydrating) {
-    hydrating = hydrateFromDb().catch((e) => {
-      hydrating = null; // permite reintentar en la siguiente petición
-      throw e;
-    });
-  }
-  return hydrating;
+/** Captura el estado actual del store como mapas id→JSON. */
+export function snapshotStore(): Snapshot {
+  return {
+    candidatos: new Map(store.candidatos.map((c) => [c.id, JSON.stringify(c)])),
+    formadores: new Map(store.formadores.map((f) => [f.id, JSON.stringify(f)])),
+    vacantes: new Map(store.vacantes.map((v) => [v.id, JSON.stringify(v)])),
+    notificaciones: new Map(store.notificaciones.map((n) => [n.id, JSON.stringify(n)])),
+  };
 }
 
 /**
- * Upsert de todo el store a la BD (write-through). No hay borrados en el dominio.
- * Usa BULK upsert (una query por tabla) para minimizar round-trips a Supabase.
+ * Persiste SOLO las entidades cuyo JSON cambió respecto al snapshot (o son nuevas).
+ * No hay borrados en el dominio, así que no se eliminan filas.
  */
-export async function persistStore(): Promise<void> {
+export async function persistChanged(snap: Snapshot): Promise<void> {
   const db = sql;
   if (!db) return;
   const json = (v: unknown) => db.json(v as Parameters<typeof db.json>[0]);
 
+  const dc = store.candidatos.filter((c) => snap.candidatos.get(c.id) !== JSON.stringify(c));
+  const df = store.formadores.filter((f) => snap.formadores.get(f.id) !== JSON.stringify(f));
+  const dv = store.vacantes.filter((v) => snap.vacantes.get(v.id) !== JSON.stringify(v));
+  const dn = store.notificaciones.filter((n) => snap.notificaciones.get(n.id) !== JSON.stringify(n));
+
+  if (!dc.length && !df.length && !dv.length && !dn.length) return; // nada cambió
+
   await db.begin(async (tx) => {
-    if (store.candidatos.length) {
-      const rows = store.candidatos.map((c) => ({ id: c.id, tipo: c.tipo, data: json(c) }));
+    if (dc.length) {
+      const rows = dc.map((c) => ({ id: c.id, tipo: c.tipo, data: json(c) }));
       await tx`insert into candidatos ${tx(rows, "id", "tipo", "data")}
                on conflict (id) do update set tipo = excluded.tipo, data = excluded.data`;
     }
-    if (store.formadores.length) {
-      const rows = store.formadores.map((f) => ({ id: f.id, data: json(f) }));
+    if (df.length) {
+      const rows = df.map((f) => ({ id: f.id, data: json(f) }));
       await tx`insert into formadores ${tx(rows, "id", "data")}
                on conflict (id) do update set data = excluded.data`;
     }
-    if (store.vacantes.length) {
-      const rows = store.vacantes.map((v) => ({ id: v.id, formador_id: v.formadorId, estado: v.estado, data: json(v) }));
+    if (dv.length) {
+      const rows = dv.map((v) => ({ id: v.id, formador_id: v.formadorId, estado: v.estado, data: json(v) }));
       await tx`insert into vacantes ${tx(rows, "id", "formador_id", "estado", "data")}
                on conflict (id) do update set formador_id = excluded.formador_id, estado = excluded.estado, data = excluded.data`;
     }
-    if (store.notificaciones.length) {
-      const rows = store.notificaciones.map((n) => ({ id: n.id, dest_tipo: n.para.tipo, dest_id: String(n.para.id), leida: n.leida, data: json(n) }));
+    if (dn.length) {
+      const rows = dn.map((n) => ({ id: n.id, dest_tipo: n.para.tipo, dest_id: String(n.para.id), leida: n.leida, data: json(n) }));
       await tx`insert into notificaciones ${tx(rows, "id", "dest_tipo", "dest_id", "leida", "data")}
                on conflict (id) do update set dest_tipo = excluded.dest_tipo, dest_id = excluded.dest_id, leida = excluded.leida, data = excluded.data`;
     }

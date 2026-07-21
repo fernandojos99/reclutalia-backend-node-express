@@ -12,7 +12,7 @@ import { API_PREFIX } from "./config/constants";
 import { apiRouter } from "./routes/index";
 import { notFound } from "./middlewares/notFound";
 import { errorHandler } from "./middlewares/errorHandler";
-import { ensureHydrated, persistStore } from "./db/persistence";
+import { refreshStore, snapshotStore, persistChanged } from "./db/persistence";
 import { dbEnabled } from "./db/client";
 
 export function createApp(): express.Express {
@@ -30,33 +30,36 @@ export function createApp(): express.Express {
     }),
   );
 
-  // Asegura que el store esté hidratado desde la BD antes de atender cualquier petición
-  // (memoizado: solo la primera lo espera de verdad). Sin BD, es no-op inmediato.
-  app.use((_req, _res, next) => {
-    ensureHydrated().then(() => next()).catch(next);
-  });
-
-  // Write-through: en escrituras exitosas (no-GET, 2xx) persiste el store a la BD ANTES de
-  // cerrar la respuesta. Interceptamos res.end para que en serverless (Vercel) el guardado
-  // termine antes de que la función se congele (con res.on('finish') se perdería).
+  // Acceso "siempre fresco" a la BD (si está configurada):
+  //   - En CADA request se re-hidrata el store desde la BD (datos actuales, sin caché stale
+  //     ni clobbering entre instancias serverless).
+  //   - En escrituras exitosas se persiste SOLO lo que cambió, ANTES de cerrar la respuesta
+  //     (interceptamos res.end para que en serverless termine antes de que la función se congele).
   if (dbEnabled) {
     app.use((req, res, next) => {
-      if (req.method === "GET" || req.method === "HEAD") return next();
-      const originalEnd = res.end.bind(res);
-      let handled = false;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      res.end = ((...args: any[]) => {
-        if (handled || res.statusCode < 200 || res.statusCode >= 400) {
-          return originalEnd(...args);
-        }
-        handled = true;
-        persistStore()
-          .catch((e) => console.error("[db] Error al persistir:", e))
-          .finally(() => originalEnd(...args));
-        return res;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }) as any;
-      next();
+      refreshStore()
+        .then(() => {
+          const esEscritura = req.method !== "GET" && req.method !== "HEAD";
+          if (!esEscritura) return next();
+
+          const snap = snapshotStore();
+          const originalEnd = res.end.bind(res);
+          let handled = false;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          res.end = ((...args: any[]) => {
+            if (handled || res.statusCode < 200 || res.statusCode >= 400) {
+              return originalEnd(...args);
+            }
+            handled = true;
+            persistChanged(snap)
+              .catch((e) => console.error("[db] Error al persistir:", e))
+              .finally(() => originalEnd(...args));
+            return res;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          }) as any;
+          next();
+        })
+        .catch(next);
     });
   }
 
