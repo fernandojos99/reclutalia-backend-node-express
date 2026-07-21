@@ -115,6 +115,11 @@ export const pipelineController = {
       res.json(pipelineService.aceptarOferta(vac(req), cand(req)));
     } catch (err) { next(err); }
   },
+  firmarContrato(req: Request, res: Response, next: NextFunction): void {
+    try {
+      res.json(pipelineService.firmarContrato(vac(req), cand(req)));
+    } catch (err) { next(err); }
+  },
   simular(req: Request, res: Response, next: NextFunction): void {
     try {
       res.json(pipelineService.simular(vac(req), cand(req)));

@@ -104,14 +104,14 @@ export const FASES = [
 /** Etiquetas del pipeline del candidato dentro de una vacante. */
 export const PIPE = [
   "Invitado", "Postulado", "Filtros OK", "Video-IA", "Ranqueado", "Entrevista agendada",
-  "Entrevistado", "Seleccionado", "Documentación", "Oferta", "Contratado",
+  "Entrevistado", "Seleccionado", "Documentación", "Oferta", "Apertura de cuenta", "Contratado",
 ] as const;
 
 /** Estado del pipeline → índice de avance (terminales = -1). */
 export const PIPE_IDX: Record<string, number> = {
   invitado: 0, postulado: 1, filtros_ok: 2, video_ia: 3, evaluado: 4, slots_enviados: 5,
   agendado: 5, entrevistado: 6, seleccionado: 7, docs_completos: 8, oferta_enviada: 9,
-  oferta_aceptada: 9, contratado: 10, descartado: -1, filtrado: -1, rechazado: -1,
+  oferta_aceptada: 10, contratado: 11, descartado: -1, filtrado: -1, rechazado: -1,
 };
 
 /** Sucursales médicas simuladas (examen médico condicional). */

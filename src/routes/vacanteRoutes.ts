@@ -43,4 +43,5 @@ vacanteRoutes.post("/:id/pipeline/:cid/cuenta", pipelineController.setCuentaBanc
 vacanteRoutes.post("/:id/pipeline/:cid/docs-contrato", pipelineController.docsContrato);
 vacanteRoutes.post("/:id/pipeline/:cid/oferta", pipelineController.enviarOferta);
 vacanteRoutes.post("/:id/pipeline/:cid/oferta/aceptar", pipelineController.aceptarOferta);
+vacanteRoutes.post("/:id/pipeline/:cid/firmar", pipelineController.firmarContrato);
 vacanteRoutes.post("/:id/pipeline/:cid/simular", pipelineController.simular);

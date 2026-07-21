@@ -207,8 +207,15 @@ export const TOOLS: ToolDef[] = [
     run: (a, ctx) => pipelineService.postularDirecto(String(a.vacId), Number(ctx.candId), String(a.mensaje ?? "")),
   },
   {
+    name: "firmar_contrato",
+    description: "El formador firma el contrato de un candidato con oferta aceptada: genera nº de empleado, correo corporativo y accesos Okta, y cierra la vacante.",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
+    run: (a) => pipelineService.firmarContrato(String(a.vacId), Number(a.cid)),
+  },
+  {
     name: "aceptar_oferta",
-    description: "El candidato actual acepta la oferta recibida en una vacante.",
+    description: "El candidato actual acepta la oferta recibida en una vacante (pasa a apertura de cuenta; el formador firma después).",
     roles: ["candidato"],
     parameters: obj({ vacId: str("ID vacante") }, ["vacId"]),
     run: (a, ctx) => pipelineService.aceptarOferta(String(a.vacId), Number(ctx.candId)),

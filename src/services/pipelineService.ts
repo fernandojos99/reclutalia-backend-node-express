@@ -327,24 +327,48 @@ export const pipelineService = {
   },
 
   /** El candidato acepta la oferta y firma; la vacante se cierra. */
+  /** El candidato acepta la oferta → pasa a "Apertura de cuenta" (ya NO cierra la vacante). */
   aceptarOferta(vacId: string, cid: number): Vacante {
+    const v = obtenerVacante(vacId);
+    const p = obtenerPipeline(v, cid);
+    const c = obtenerCandidato(cid);
+    p.estado = "oferta_aceptada";
+    p.historial.push(`Aceptó la carta oferta · ${hoy()}`);
+    notificacionService.emitir(
+      { tipo: "formador", id: v.formadorId },
+      "¡Tu candidato aceptó la oferta! 🎉",
+      `${c.nombre} aceptó la carta oferta de "${v.req.titulo}" (ingreso: ${p.oferta?.fecha}). Cuando abra su cuenta de nómina podrás firmar el contrato desde la pestaña Contratación.`,
+      v.id,
+    );
+    notificacionService.emitir(
+      { tipo: "candidato", id: cid },
+      "Oferta aceptada · siguiente paso",
+      `Aceptaste la oferta de "${v.req.titulo}". Siguiente paso: abre tu cuenta de nómina (QR o enlace) y registra tu número de cuenta para que tu formador firme el contrato.`,
+      v.id,
+    );
+    return v;
+  },
+
+  /** El formador firma el contrato: número de empleado, correo corporativo y accesos Okta; cierra la vacante. */
+  firmarContrato(vacId: string, cid: number): Vacante {
     const v = obtenerVacante(vacId);
     const p = obtenerPipeline(v, cid);
     const c = obtenerCandidato(cid);
     p.estado = "contratado";
     p.numEmpleado = numEmpleado(cid);
-    p.historial.push(`Oferta aceptada y contrato firmado digitalmente · ${hoy()}`);
+    const correo = `${p.numEmpleado}@elektra.com.mx`;
+    p.historial.push(`Contrato firmado · nº de empleado ${p.numEmpleado} · accesos Okta confirmados · ${hoy()}`);
     v.estado = "cerrada";
     notificacionService.emitir(
       { tipo: "formador", id: v.formadorId },
-      "¡Tu candidato aceptó la oferta y firmó! 🎉",
-      `${c.nombre} aceptó la carta oferta de "${v.req.titulo}" y firmó su contrato. Ingreso: ${p.oferta?.fecha}. Número de empleado: ${p.numEmpleado}. Abre la pantalla de bienvenida para ver su kit de inducción.`,
+      "Contrato firmado · contratación completada 🎉",
+      `Firmaste el contrato de ${c.nombre} para "${v.req.titulo}". Nº de empleado: ${p.numEmpleado} · correo ${correo} · accesos lógicos (Okta) confirmados. Ingreso: ${p.oferta?.fecha}.`,
       v.id,
     );
     notificacionService.emitir(
       { tipo: "candidato", id: cid },
       "¡Bienvenido(a) al equipo!",
-      `Firmaste tu contrato para "${v.req.titulo}". Tu número de empleado es ${p.numEmpleado}. Te esperamos el ${p.oferta?.fecha}. Revisa tu kit de inducción.`,
+      `Tu contrato para "${v.req.titulo}" quedó firmado. Nº de empleado: ${p.numEmpleado} · correo corporativo ${correo} · accesos Okta confirmados. Te esperamos el ${p.oferta?.fecha}.`,
       v.id,
     );
     return v;
@@ -386,6 +410,8 @@ export const pipelineService = {
       this.docsContratoListos(vacId, cid);
     } else if (p.estado === "oferta_enviada") {
       this.aceptarOferta(vacId, cid);
+    } else if (p.estado === "oferta_aceptada" && !p.cuentaBanco) {
+      this.setCuentaBanco(vacId, cid, "012180001234567895");
     }
     return v;
   },
