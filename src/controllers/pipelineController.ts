@@ -6,7 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 import { pipelineService } from "../services/pipelineService";
 import { parseBody, parseNumericId } from "../utils/validate";
 import {
-  invitarSchema, aplicarSchema, rechazarSchema, postularDirectoSchema, enviarSlotsSchema,
+  invitarSchema, rechazarSchema, postularDirectoSchema, enviarSlotsSchema,
   confirmarSlotSchema, registrarEntrevistaSchema, agendarMedicoSchema, enviarOfertaSchema,
   docContratoSchema, cuentaBancoSchema,
 } from "../validators/pipelineSchemas";
@@ -23,8 +23,7 @@ export const pipelineController = {
   },
   aplicar(req: Request, res: Response, next: NextFunction): void {
     try {
-      const { killersOk } = parseBody(aplicarSchema, req.body);
-      res.json(pipelineService.aplicar(vac(req), cand(req), killersOk));
+      res.json(pipelineService.aplicar(vac(req), cand(req)));
     } catch (err) { next(err); }
   },
   rechazar(req: Request, res: Response, next: NextFunction): void {
@@ -35,8 +34,8 @@ export const pipelineController = {
   },
   postularDirecto(req: Request, res: Response, next: NextFunction): void {
     try {
-      const { killersOk, mensaje } = parseBody(postularDirectoSchema, req.body);
-      res.json(pipelineService.postularDirecto(vac(req), cand(req), killersOk, mensaje));
+      const { mensaje } = parseBody(postularDirectoSchema, req.body);
+      res.json(pipelineService.postularDirecto(vac(req), cand(req), mensaje));
     } catch (err) { next(err); }
   },
   docsFiltro(req: Request, res: Response, next: NextFunction): void {

@@ -87,12 +87,13 @@ export interface Requisito {
   nivelPuesto: string;
   anosExp: number;
   educacion: string;
+  /** Especialidades (fusión de requeridas + opcionales, máx. 5). */
   espRequeridas: string[];
-  espOpcionales: string[];
+  /** Áreas de conocimiento / profesiones (catálogo PROFESIONES, máx. 3). */
+  areasConocimiento: string[];
   hardSkills: string[];
   softSkills: string[];
   aptitudes: string[];
-  killer: { q: string }[];
   ubicacionTrabajo: string;
   modalidad: string;
   ubicacionCandidato: string;
@@ -101,6 +102,8 @@ export interface Requisito {
   salarioMax: number;
   /** Sueldo mensual único que se muestra en el descriptivo (default: punto medio del rango). */
   sueldo?: number;
+  /** Turno de trabajo (Matutino / Vespertino / Mixto); sustituye visualmente a horario/días. */
+  turno: string;
   horario: string;
   dias: string[];
   numVacantes: number;

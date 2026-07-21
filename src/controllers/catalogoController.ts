@@ -15,6 +15,8 @@ export const catalogoController = {
       tiposVacante: catalogs.TIPOS_VACANTE,
       camposDesc: catalogs.CAMPOS_DESC,
       especialidades: catalogs.ESPECIALIDADES,
+      profesiones: catalogs.PROFESIONES,
+      turnos: catalogs.TURNOS,
       hardSkills: catalogs.HARD_SKILLS,
       softSkills: catalogs.SOFT_SKILLS,
       aptitudes: catalogs.APTITUDES,

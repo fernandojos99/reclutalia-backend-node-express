@@ -5,8 +5,6 @@
 import { z } from "zod";
 import { MAX_TEXT_LENGTH } from "../config/constants";
 
-const killerSchema = z.object({ q: z.string().max(MAX_TEXT_LENGTH) }).strict();
-
 /** Descriptivo de la vacante. Refleja `Requisito`; todos los campos requeridos. */
 export const requisitoSchema = z.object({
   titulo: z.string().min(1).max(MAX_TEXT_LENGTH),
@@ -15,12 +13,13 @@ export const requisitoSchema = z.object({
   nivelPuesto: z.string().min(1),
   anosExp: z.number().int().min(0),
   educacion: z.string().min(1),
-  espRequeridas: z.array(z.string()),
-  espOpcionales: z.array(z.string()),
+  espRequeridas: z.array(z.string()).max(5),
+  areasConocimiento: z.array(z.string()).max(3).default([]),
   hardSkills: z.array(z.string()),
   softSkills: z.array(z.string()),
   aptitudes: z.array(z.string()),
-  killer: z.array(killerSchema),
+  turno: z.string().default("Turno Mixto"),
+  sueldo: z.number().min(0).optional(),
   ubicacionTrabajo: z.string(),
   modalidad: z.string(),
   ubicacionCandidato: z.string(),

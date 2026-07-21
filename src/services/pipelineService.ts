@@ -56,24 +56,13 @@ export const pipelineService = {
     return v;
   },
 
-  /** El candidato acepta la invitación y responde las preguntas filtro. */
-  aplicar(vacId: string, cid: number, killersOk: boolean): Vacante {
+  /** El candidato acepta la invitación y se postula (la postulación siempre procede). */
+  aplicar(vacId: string, cid: number): Vacante {
     const v = obtenerVacante(vacId);
     const p = obtenerPipeline(v, cid);
     const c = obtenerCandidato(cid);
-    if (!killersOk) {
-      p.estado = "filtrado";
-      p.historial.push(`No superó las preguntas filtro · ${hoy()}`);
-      notificacionService.emitir(
-        { tipo: "candidato", id: cid },
-        "Resultado de tu postulación",
-        `Gracias por tu interés en "${v.req.titulo}". Por ahora tu perfil no cumple los requisitos indispensables; te consideraremos para otras vacantes compatibles.`,
-        v.id,
-      );
-      return v;
-    }
     p.estado = "postulado";
-    p.historial.push(`Se postuló y respondió preguntas filtro · ${hoy()}`);
+    p.historial.push(`Se postuló a la vacante · ${hoy()}`);
     notificacionService.emitir(
       { tipo: "formador", id: v.formadorId },
       "Nuevo candidato postulado",
@@ -101,23 +90,10 @@ export const pipelineService = {
   },
 
   /** El candidato aplica por su cuenta desde "Buscar vacantes" (sin invitación previa). */
-  postularDirecto(vacId: string, cid: number, killersOk: boolean, mensaje: string): Vacante {
+  postularDirecto(vacId: string, cid: number, mensaje: string): Vacante {
     const v = obtenerVacante(vacId);
     const c = obtenerCandidato(cid);
     const m = matchScore(c, v.req);
-    if (!killersOk) {
-      v.pipeline[cid] = {
-        estado: "filtrado", match: m, mensaje, docsFiltro: {}, docsContrato: {},
-        historial: [`Aplicó desde Buscar vacantes · no superó las preguntas filtro · ${hoy()}`],
-      };
-      notificacionService.emitir(
-        { tipo: "candidato", id: cid },
-        "Resultado de tu postulación",
-        `Gracias por tu interés en "${v.req.titulo}". Por ahora tu perfil no cumple los requisitos indispensables; te consideraremos para otras vacantes compatibles.`,
-        v.id,
-      );
-      return v;
-    }
     v.pipeline[cid] = {
       estado: "postulado", match: m, mensaje, docsFiltro: {}, docsContrato: {},
       historial: [`Se postuló directamente desde Buscar vacantes · ${hoy()}`],
@@ -384,7 +360,7 @@ export const pipelineService = {
       candidatoService.completarPsicometrico(cid);
     };
     if (p.estado === "invitado") {
-      this.aplicar(vacId, cid, true);
+      this.aplicar(vacId, cid);
       filtrosDemo();
       this.docsFiltroListos(vacId, cid);
       this.videoIA(vacId, cid);

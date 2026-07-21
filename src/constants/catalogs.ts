@@ -13,9 +13,20 @@ export const NIVELES = [
 ] as const;
 
 export const EDUCACION = [
-  "Bachillerato", "Técnico Superior", "Licenciatura trunca",
-  "Licenciatura titulado", "Maestría", "Doctorado",
+  "Secundaria", "Bachillerato", "Técnico Superior", "Licenciatura", "Maestría", "Doctorado",
 ] as const;
+
+/** Áreas de conocimiento / profesiones comunes (para `req.areasConocimiento`, máx. 3). */
+export const PROFESIONES = [
+  "Ingeniería de Software", "Administración de Empresas", "Contaduría", "Derecho", "Psicología",
+  "Mercadotecnia", "Ingeniería Industrial", "Medicina", "Enfermería", "Arquitectura",
+  "Diseño Gráfico", "Comunicación", "Economía", "Finanzas", "Recursos Humanos",
+  "Comercio Internacional", "Sistemas Computacionales", "Gastronomía", "Turismo", "Educación",
+  "Ventas", "Logística", "Actuaría", "Ingeniería Civil", "Química",
+] as const;
+
+/** Turnos de trabajo (para `req.turno`). */
+export const TURNOS = ["Turno Matutino", "Turno Vespertino", "Turno Mixto"] as const;
 
 export const CIUDADES = [
   "CDMX", "Monterrey", "Guadalajara", "Puebla", "Querétaro",
@@ -47,10 +58,10 @@ export const CAMPOS_DESC: Record<string, string> = {
   nivelPuesto: "Nivel del puesto", numVacantes: "Número de posiciones",
   ubicacionTrabajo: "Ubicación del trabajo", sede: "Sede", unidadNegocio: "Unidad de Negocio",
   tipoVacante: "Tipo de vacante", anosExp: "Años de experiencia", educacion: "Nivel de estudios",
-  radio: "Radio de búsqueda", espRequeridas: "Especialidades requeridas",
-  espOpcionales: "Especialidades opcionales", hardSkills: "Habilidades técnicas",
+  radio: "Radio de búsqueda", espRequeridas: "Especialidades",
+  areasConocimiento: "Área de conocimiento", hardSkills: "Habilidades técnicas",
   softSkills: "Habilidades blandas", aptitudes: "Aptitudes", edad: "Rango de edad",
-  killer: "Preguntas filtro", modalidad: "Modalidad", dias: "Días de trabajo",
+  turno: "Turno", sueldo: "Sueldo", modalidad: "Modalidad", dias: "Días de trabajo",
   horario: "Horario", salario: "Rango salarial", examenMedico: "Examen médico",
 };
 

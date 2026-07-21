@@ -57,9 +57,9 @@ const limpio = (o: Record<string, unknown>) => Object.fromEntries(Object.entries
 const defaultRequisito = (over: Record<string, unknown>): Requisito =>
   ({
     titulo: "Nueva vacante", area: "Operaciones", descripcion: "",
-    nivelPuesto: "Junior", anosExp: 0, educacion: "Licenciatura titulado",
-    espRequeridas: [], espOpcionales: [], hardSkills: [], softSkills: [], aptitudes: [],
-    killer: [], ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX",
+    nivelPuesto: "Junior", anosExp: 0, educacion: "Licenciatura",
+    espRequeridas: [], areasConocimiento: [], hardSkills: [], softSkills: [], aptitudes: [],
+    turno: "Turno Mixto", ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX",
     radioKm: 25, salarioMin: 10000, salarioMax: 15000, horario: "Tiempo completo", dias: [],
     numVacantes: 1, examenMedico: false, tipoSede: "Corporativo", sede: "", unidadNegocio: "",
     tipoVacante: "Estándar", puedeSerSuperior: false, ubicacionNoRelevante: false,
@@ -201,8 +201,8 @@ export const TOOLS: ToolDef[] = [
     name: "postular_directo",
     description: "Postula directamente al candidato actual a una vacante (sin invitación previa).",
     roles: ["candidato"],
-    parameters: obj({ vacId: str("ID vacante"), killersOk: bool("¿Cumple las preguntas killer?"), mensaje: str("Mensaje de postulación") }, ["vacId"]),
-    run: (a, ctx) => pipelineService.postularDirecto(String(a.vacId), Number(ctx.candId), a.killersOk ?? true, String(a.mensaje ?? "")),
+    parameters: obj({ vacId: str("ID vacante"), mensaje: str("Mensaje de postulación") }, ["vacId"]),
+    run: (a, ctx) => pipelineService.postularDirecto(String(a.vacId), Number(ctx.candId), String(a.mensaje ?? "")),
   },
   {
     name: "aceptar_oferta",
@@ -330,10 +330,10 @@ export const TOOLS: ToolDef[] = [
   // ─────────────── Pipeline: pasos restantes ───────────────
   {
     name: "aplicar_candidato",
-    description: "Registra que el candidato acepta la invitación (confirma preguntas killer).",
+    description: "Registra que el candidato acepta la invitación y se postula.",
     roles: ["candidato", "formador", "admin"],
-    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)"), killersOk: bool("¿Cumple las preguntas killer?") }, ["vacId"]),
-    run: (a, ctx) => pipelineService.aplicar(String(a.vacId), Number(a.cid ?? ctx.candId), a.killersOk ?? true),
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato (formador/admin)") }, ["vacId"]),
+    run: (a, ctx) => pipelineService.aplicar(String(a.vacId), Number(a.cid ?? ctx.candId)),
   },
   {
     name: "enviar_slots",

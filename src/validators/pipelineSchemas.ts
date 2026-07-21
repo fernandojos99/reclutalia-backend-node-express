@@ -6,12 +6,9 @@ const texto = z.string().max(MAX_TEXT_LENGTH);
 
 export const invitarSchema = z.object({ mensaje: texto }).strict();
 
-export const aplicarSchema = z.object({ killersOk: z.boolean() }).strict();
-
 export const rechazarSchema = z.object({ motivo: texto.default("") }).strict();
 
 export const postularDirectoSchema = z.object({
-  killersOk: z.boolean(),
   mensaje: texto.default(""),
 }).strict();
 

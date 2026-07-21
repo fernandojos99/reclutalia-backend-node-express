@@ -27,13 +27,15 @@ const aArray = (v: unknown): unknown[] => (Array.isArray(v) ? v : v == null || v
  * esto protege el path del agente, que llama al servicio directamente).
  */
 function coercionarReq(req: Requisito): Requisito {
-  req.espRequeridas = aArray(req.espRequeridas) as string[];
-  req.espOpcionales = aArray(req.espOpcionales) as string[];
+  req.espRequeridas = (aArray(req.espRequeridas) as string[]).slice(0, 5);
+  req.areasConocimiento = (aArray(req.areasConocimiento) as string[]).slice(0, 3);
   req.hardSkills = aArray(req.hardSkills) as string[];
   req.softSkills = aArray(req.softSkills) as string[];
   req.aptitudes = aArray(req.aptitudes) as string[];
   req.dias = aArray(req.dias) as string[];
-  req.killer = aArray(req.killer).map((q) => (typeof q === "string" ? { q } : q)) as { q: string }[];
+  if (!req.turno) req.turno = "Turno Mixto";
+  // Sueldo único: si no viene, se calcula del punto medio del rango (redondeado a 500).
+  if (req.sueldo == null) req.sueldo = Math.round((req.salarioMin + req.salarioMax) / 2 / 500) * 500;
   return req;
 }
 
@@ -121,7 +123,8 @@ export const vacanteService = {
         v.id,
       );
     } else if (nota) {
-      v.historial.push(`Nota del administrador: "${nota}" · ${hoy()}`);
+      // Edición directa (sin flujo de cambios): la nota describe quién y qué editó.
+      v.historial.push(`${nota} · ${hoy()}`);
     }
     return v;
   },

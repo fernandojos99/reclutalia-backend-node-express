@@ -14,7 +14,7 @@ import type { Candidato } from "../types/domain";
 function baseCandidato(): Omit<Candidato, "id"> {
   return {
     nombre: "Nuevo candidato", tipo: "externo", area: "Operaciones", puesto: "",
-    nivel: "Junior", exp: 0, edu: "Licenciatura titulado", ciudad: "CDMX", modalidad: "Presencial",
+    nivel: "Junior", exp: 0, edu: "Licenciatura", ciudad: "CDMX", modalidad: "Presencial",
     salario: 12000, esp: [], hard: [], soft: [], resumen: "", email: "", tel: "",
     experiencia: [], educacion: [], intereses: [], foto: null, favoritos: [], psicometrico: null,
     docsPerfil: { ine: null, curp: null, rfc: null, domicilio: null, estudios: null, certificaciones: [], cv: null },

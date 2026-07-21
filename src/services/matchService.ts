@@ -12,9 +12,9 @@ export function matchScore(c: Candidato, req: Requisito): number {
   let s = 0;
   const inter = (a: string[], b: string[]): number => a.filter((x) => b.includes(x)).length;
 
+  // Especialidades fusionadas: el peso de las antiguas opcionales (6) se sumó a requeridas (34+6=40).
   const er = req.espRequeridas.length ? inter(c.esp, req.espRequeridas) / req.espRequeridas.length : 0.5;
-  s += er * 34;
-  if (req.espOpcionales.length) s += (inter(c.esp, req.espOpcionales) / req.espOpcionales.length) * 6;
+  s += er * 40;
   if (req.hardSkills.length) s += (inter(c.hard, req.hardSkills) / req.hardSkills.length) * 24;
   if (req.softSkills.length) s += (inter(c.soft, req.softSkills) / req.softSkills.length) * 8;
 
