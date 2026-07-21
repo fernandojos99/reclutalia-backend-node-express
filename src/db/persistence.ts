@@ -61,21 +61,35 @@ export function snapshotStore(): Snapshot {
   };
 }
 
+/** Ids del snapshot que ya no están en el store (fueron eliminados durante el request). */
+function eliminados<T>(snapKeys: IterableIterator<T>, presentes: Set<T>): T[] {
+  return [...snapKeys].filter((id) => !presentes.has(id));
+}
+
 /**
- * Persiste SOLO las entidades cuyo JSON cambió respecto al snapshot (o son nuevas).
- * No hay borrados en el dominio, así que no se eliminan filas.
+ * Persiste los cambios de un request contra la BD:
+ *   - upsert de las entidades cuyo JSON cambió o son nuevas,
+ *   - DELETE de las entidades que estaban en el snapshot y ya no están en el store.
  */
 export async function persistChanged(snap: Snapshot): Promise<void> {
   const db = sql;
   if (!db) return;
   const json = (v: unknown) => db.json(v as Parameters<typeof db.json>[0]);
 
+  // Entidades cambiadas o nuevas (upsert).
   const dc = store.candidatos.filter((c) => snap.candidatos.get(c.id) !== JSON.stringify(c));
   const df = store.formadores.filter((f) => snap.formadores.get(f.id) !== JSON.stringify(f));
   const dv = store.vacantes.filter((v) => snap.vacantes.get(v.id) !== JSON.stringify(v));
   const dn = store.notificaciones.filter((n) => snap.notificaciones.get(n.id) !== JSON.stringify(n));
 
-  if (!dc.length && !df.length && !dv.length && !dn.length) return; // nada cambió
+  // Entidades eliminadas (delete).
+  const delC = eliminados(snap.candidatos.keys(), new Set(store.candidatos.map((c) => c.id)));
+  const delF = eliminados(snap.formadores.keys(), new Set(store.formadores.map((f) => f.id)));
+  const delV = eliminados(snap.vacantes.keys(), new Set(store.vacantes.map((v) => v.id)));
+  const delN = eliminados(snap.notificaciones.keys(), new Set(store.notificaciones.map((n) => n.id)));
+
+  if (!dc.length && !df.length && !dv.length && !dn.length &&
+      !delC.length && !delF.length && !delV.length && !delN.length) return; // nada que hacer
 
   await db.begin(async (tx) => {
     if (dc.length) {
@@ -98,5 +112,10 @@ export async function persistChanged(snap: Snapshot): Promise<void> {
       await tx`insert into notificaciones ${tx(rows, "id", "dest_tipo", "dest_id", "leida", "data")}
                on conflict (id) do update set dest_tipo = excluded.dest_tipo, dest_id = excluded.dest_id, leida = excluded.leida, data = excluded.data`;
     }
+    // Borrados
+    if (delC.length) await tx`delete from candidatos where id in ${tx(delC)}`;
+    if (delF.length) await tx`delete from formadores where id in ${tx(delF)}`;
+    if (delV.length) await tx`delete from vacantes where id in ${tx(delV)}`;
+    if (delN.length) await tx`delete from notificaciones where id in ${tx(delN)}`;
   });
 }
