@@ -61,6 +61,11 @@ export async function runAgent(
       emit({ type: "tool", name: call.function.name, args });
 
       const result = await runTool(call.function.name, args, session.ctx);
+      // Si la tool devolvió un error, lo emitimos como status para poder diagnosticarlo
+      // desde el cliente (el modelo tiende a ocultarlo tras un mensaje genérico).
+      if (result && typeof result === "object" && "error" in (result as Record<string, unknown>)) {
+        emit({ type: "status", text: `tool ${call.function.name}: ${JSON.stringify(result)}` });
+      }
       session.messages.push({
         role: "tool",
         tool_call_id: call.id,

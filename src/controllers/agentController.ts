@@ -7,6 +7,7 @@ import { z } from "zod";
 import { getSession } from "../agent/sessions";
 import { runAgent, type AgentEvent } from "../agent/runner";
 import type { AgentContext } from "../agent/tools";
+import { env } from "../config/env";
 
 const chatSchema = z
   .object({
@@ -25,6 +26,18 @@ function sseSend(res: Response, event: AgentEvent): void {
 }
 
 export const agentController = {
+  /**
+   * Diagnóstico: confirma que el agente está bien configurado. Las tools corren en proceso
+   * (no por HTTP), así que aquí solo verificamos que exista la API key y el modelo. No la expone.
+   */
+  diag(_req: Request, res: Response): void {
+    res.json({
+      tieneDeepseekKey: env.deepseekApiKey.length > 0,
+      modelo: env.deepseekModel,
+      toolsEnProceso: true,
+    });
+  },
+
   async chat(req: Request, res: Response): Promise<void> {
     const parsed = chatSchema.safeParse(req.body);
     if (!parsed.success) {

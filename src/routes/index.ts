@@ -13,6 +13,7 @@ apiRouter.get("/health", (_req, res) => res.json({ ok: true }));
 
 // ── Agente IA (chat por SSE) ──
 apiRouter.post("/agente/chat", agentController.chat);
+apiRouter.get("/agente/diag", agentController.diag); // diagnóstico temporal
 apiRouter.get("/catalogos", catalogoController.listar);
 
 apiRouter.use("/vacantes", vacanteRoutes);
