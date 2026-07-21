@@ -39,7 +39,7 @@ const C = crearCandidato;
 
 export const SEED_CANDIDATOS: Candidato[] = [
   C(1, "Valeria Ortiz Camacho", "externo", "Ventas", "Ejecutiva de ventas retail", "Semi-Senior", 5, "Licenciatura titulado", "CDMX", "Presencial", 16000, ["Ventas B2C", "Servicio al Cliente"], ["CRM", "Negociación comercial", "Prospección en frío", "Excel avanzado"], ["Comunicación efectiva", "Orientación a resultados", "Empatía"], "5 años en piso de venta y telemarketing; top performer 2024 en cadena retail."),
-  C(2, "Jorge Luis Peña Ríos", "interno", "Ventas", "Asesor comercial", "Junior", 2, "Licenciatura trunca", "CDMX", "Híbrido", 13000, ["Ventas B2C"], ["CRM", "Prospección en frío"], ["Proactividad", "Trabajo en equipo"], "Asesor interno con 2 años en sucursal; busca crecer a ventas digitales."),
+  C(2, "Jorge Luis Peña Ríos", "interno", "Ventas", "Asesor comercial", "Junior", 2, "Licenciatura trunca", "CDMX", "Híbrido", 13000, ["Ventas B2C", "Servicio al Cliente"], ["CRM", "Prospección en frío", "Excel avanzado"], ["Proactividad", "Trabajo en equipo"], "Asesor interno con 2 años en sucursal; busca crecer a ventas digitales."),
   C(3, "Mariana Gutiérrez Solís", "externo", "Ventas", "Key Account Manager", "Senior", 8, "Licenciatura titulado", "Monterrey", "Híbrido", 32000, ["Ventas B2B", "CRM y Fidelización"], ["Salesforce", "Negociación comercial", "Inglés avanzado", "Excel avanzado"], ["Negociación", "Liderazgo", "Comunicación efectiva"], "Manejo de cuentas clave corporativas en el norte del país; cartera de $40M anuales."),
   C(4, "Ricardo Anaya Torres", "externo", "Ventas", "Vendedor de campo", "Junior", 3, "Bachillerato", "Puebla", "Presencial", 11000, ["Ventas B2C"], ["Prospección en frío"], ["Adaptabilidad", "Orientación a resultados"], "Ventas puerta a puerta de servicios financieros; excede cuota trimestral consistentemente."),
   C(5, "Ana Sofía Lira Medina", "externo", "Datos y Analítica", "Analista de datos Sr", "Senior", 6, "Maestría", "CDMX", "Híbrido", 42000, ["Ciencia de Datos", "Business Intelligence"], ["Python", "SQL", "Power BI", "Excel avanzado"], ["Pensamiento analítico", "Atención al detalle", "Comunicación efectiva"], "Modelos de propensión y tableros ejecutivos para banca de consumo."),
@@ -47,8 +47,8 @@ export const SEED_CANDIDATOS: Candidato[] = [
   C(7, "Fernanda Cabrera Núñez", "externo", "Datos y Analítica", "Científica de datos", "Semi-Senior", 4, "Maestría", "Guadalajara", "Remoto", 38000, ["Ciencia de Datos"], ["Python", "SQL", "Tableau"], ["Pensamiento analítico", "Proactividad", "Adaptabilidad"], "NLP y modelos de churn en fintech; publicaciones en meetups de datos GDL."),
   C(8, "Héctor Salgado Ponce", "externo", "Datos y Analítica", "Ingeniero de datos", "Senior", 7, "Licenciatura titulado", "Querétaro", "Remoto", 45000, ["Ciencia de Datos", "Infraestructura TI"], ["Python", "SQL", "SAP"], ["Atención al detalle", "Trabajo en equipo"], "Pipelines de datos sobre SAP BW y nube; migración de DWH bancario."),
   C(9, "Lucía Herrera Bautista", "externo", "Tecnología", "Desarrolladora Frontend", "Semi-Senior", 4, "Licenciatura titulado", "CDMX", "Híbrido", 34000, ["Desarrollo Frontend", "UX/UI"], ["React", "Figma", "Node.js"], ["Trabajo en equipo", "Atención al detalle", "Proactividad"], "SPAs bancarias con React; obsesionada con accesibilidad y design systems."),
-  C(10, "Emilio Castañeda Vela", "externo", "Tecnología", "Desarrollador Backend", "Senior", 7, "Licenciatura titulado", "Monterrey", "Remoto", 48000, ["Desarrollo Backend"], ["Node.js", "Python", "SQL", "Scrum"], ["Pensamiento analítico", "Gestión del tiempo", "Liderazgo"], "APIs de alta concurrencia para pagos; lideró célula de 5 devs."),
-  C(11, "Paola Reyes Ibarra", "interno", "Tecnología", "Ingeniera de soporte", "Junior", 2, "Técnico Superior", "CDMX", "Presencial", 15000, ["Infraestructura TI"], ["Redes Cisco", "Excel avanzado"], ["Orientación al servicio", "Resolución de conflictos", "Empatía"], "Soporte N2 interno; certificación CCNA en curso."),
+  C(10, "Emilio Castañeda Vela", "externo", "Tecnología", "Desarrollador Fullstack", "Senior", 7, "Licenciatura titulado", "CDMX", "Remoto", 48000, ["Desarrollo Backend", "Desarrollo Frontend"], ["Node.js", "Python", "SQL", "React"], ["Trabajo en equipo", "Gestión del tiempo", "Liderazgo"], "APIs de alta concurrencia para pagos; lideró célula de 5 devs."),
+  C(11, "Paola Reyes Ibarra", "interno", "Tecnología", "Desarrolladora Frontend Jr", "Junior", 2, "Técnico Superior", "CDMX", "Presencial", 15000, ["Desarrollo Frontend"], ["React", "Node.js"], ["Orientación al servicio", "Resolución de conflictos", "Empatía"], "Soporte N2 interno; certificación CCNA en curso."),
   C(12, "Andrés Molina Farías", "externo", "Tecnología", "Especialista en ciberseguridad", "Senior", 8, "Maestría", "CDMX", "Híbrido", 55000, ["Ciberseguridad", "Infraestructura TI"], ["Python", "Redes Cisco", "Inglés avanzado"], ["Atención al detalle", "Pensamiento analítico"], "Pentesting y respuesta a incidentes en sector financiero; CISSP."),
   C(13, "Gabriela Fuentes Roldán", "externo", "Marketing", "Especialista en marketing digital", "Semi-Senior", 5, "Licenciatura titulado", "CDMX", "Híbrido", 26000, ["Marketing Digital", "CRM y Fidelización"], ["Google Ads", "Meta Ads", "SEO", "CRM"], ["Creatividad", "Orientación a resultados", "Comunicación efectiva"], "Campañas performance con ROAS 6x en e-commerce; certificada Google."),
   C(14, "Tomás Aguilar Prieto", "externo", "Marketing", "Coordinador de contenido", "Junior", 3, "Licenciatura titulado", "Mérida", "Remoto", 18000, ["Marketing Digital"], ["SEO", "Meta Ads"], ["Creatividad", "Proactividad"], "Contenido orgánico y paid para marcas regionales del sureste."),
@@ -63,12 +63,12 @@ export const SEED_CANDIDATOS: Candidato[] = [
   C(23, "Daniela Paredes Luna", "externo", "Operaciones", "Analista de cadena de suministro", "Junior", 2, "Licenciatura titulado", "Querétaro", "Híbrido", 16000, ["Cadena de Suministro"], ["Excel avanzado", "SQL"], ["Pensamiento analítico", "Atención al detalle"], "Planeación de demanda en manufactura; egresada con honores del ITQ."),
   C(24, "Marcos Ibáñez Cruz", "interno", "Operaciones", "Jefe de piso", "Senior", 9, "Bachillerato", "CDMX", "Presencial", 19000, ["Logística", "Servicio al Cliente"], ["Excel avanzado"], ["Liderazgo", "Resolución de conflictos", "Tolerancia a la presión"], "12 años en tiendas del grupo; conoce la operación de punta a punta."),
   C(25, "Sofía Nieto Arellano", "externo", "Atención a Clientes", "Ejecutiva de servicio", "Junior", 2, "Técnico Superior", "CDMX", "Presencial", 11500, ["Servicio al Cliente"], ["Zendesk", "CRM"], ["Empatía", "Comunicación efectiva", "Orientación al servicio"], "Atención omnicanal en telecom; NPS personal de 92."),
-  C(26, "Iván Quintero Mora", "externo", "Atención a Clientes", "Coordinador de call center", "Semi-Senior", 6, "Licenciatura titulado", "Tijuana", "Presencial", 20000, ["Servicio al Cliente", "Cobranza"], ["Zendesk", "CRM", "Excel avanzado"], ["Liderazgo", "Tolerancia a la presión", "Resolución de conflictos"], "Coordinó célula de 35 agentes bilingües; mejoró AHT 22%."),
-  C(27, "Regina Salas Montaño", "interno", "Atención a Clientes", "Agente senior", "Semi-Senior", 4, "Bachillerato", "CDMX", "Presencial", 13500, ["Servicio al Cliente", "Cobranza"], ["Zendesk", "CRM"], ["Empatía", "Orientación al servicio", "Adaptabilidad"], "Agente interna con mejores métricas de retención de clientes 2025."),
+  C(26, "Iván Quintero Mora", "externo", "Atención a Clientes", "Coordinador de call center", "Semi-Senior", 6, "Licenciatura titulado", "CDMX", "Presencial", 20000, ["Servicio al Cliente", "Cobranza"], ["Zendesk", "CRM", "Excel avanzado"], ["Liderazgo", "Tolerancia a la presión", "Empatía"], "Coordinó célula de 35 agentes bilingües; mejoró AHT 22%."),
+  C(27, "Regina Salas Montaño", "interno", "Atención a Clientes", "Agente senior", "Semi-Senior", 4, "Bachillerato", "CDMX", "Presencial", 13500, ["Servicio al Cliente", "Cobranza"], ["Zendesk", "CRM", "Excel avanzado"], ["Empatía", "Orientación al servicio", "Adaptabilidad"], "Agente interna con mejores métricas de retención de clientes 2025."),
   C(28, "Federico Lozano Gil", "externo", "Legal", "Abogado corporativo", "Senior", 8, "Maestría", "CDMX", "Híbrido", 46000, ["Derecho Corporativo", "Cumplimiento (Compliance)"], ["Inglés avanzado"], ["Atención al detalle", "Negociación", "Pensamiento analítico"], "Contratos mercantiles, gobierno corporativo y PLD en sector financiero."),
   C(29, "Carolina Vega Serrano", "externo", "Legal", "Analista de cumplimiento", "Junior", 3, "Licenciatura titulado", "CDMX", "Presencial", 17000, ["Cumplimiento (Compliance)"], ["Excel avanzado"], ["Atención al detalle", "Proactividad"], "Monitoreo PLD y listas restrictivas en SOFOM; certificación CNBV en curso."),
   C(30, "Mateo Arriaga Solano", "externo", "Producto", "Product Manager", "Senior", 7, "Maestría", "CDMX", "Híbrido", 52000, ["Gestión de Producto", "UX/UI"], ["Scrum", "Figma", "SQL", "Inglés avanzado"], ["Liderazgo", "Comunicación efectiva", "Pensamiento analítico"], "PM de apps financieras con 2M MAU; discovery continuo y OKRs."),
-  C(31, "Julieta Márquez Ferrer", "externo", "Producto", "UX Designer", "Semi-Senior", 5, "Licenciatura titulado", "Guadalajara", "Remoto", 30000, ["UX/UI"], ["Figma", "Scrum"], ["Creatividad", "Empatía", "Atención al detalle"], "Research y diseño de flujos transaccionales; sistema de diseño multi-marca."),
+  C(31, "Julieta Márquez Ferrer", "externo", "Tecnología", "Desarrolladora Frontend / UX", "Semi-Senior", 5, "Licenciatura titulado", "CDMX", "Híbrido", 30000, ["Desarrollo Frontend", "UX/UI"], ["React", "Figma", "Node.js"], ["Creatividad", "Empatía", "Atención al detalle"], "Research y diseño de flujos transaccionales; sistema de diseño multi-marca."),
   C(32, "Pablo Serna Cantú", "interno", "Ventas", "Promotor financiero", "Junior", 1, "Bachillerato", "Monterrey", "Presencial", 10500, ["Ventas B2C", "Cobranza"], ["Prospección en frío"], ["Proactividad", "Adaptabilidad", "Orientación a resultados"], "Promotor interno de crédito; primer año con 110% de cuota."),
 ];
 
@@ -104,15 +104,14 @@ export const SEED_VACANTES: Vacante[] = [
   {
     id: "V-1042", estado: "asignada", formadorId: "F1", creada: "01 jul 2026", creadaTs: new Date("2026-07-01").getTime(), pipeline: {}, historial: [], cambios: null, archivados: [],
     req: crearRequisito({
-      titulo: "Ejecutivo de Ventas Digitales", area: "Ventas",
-      descripcion: "Responsable de la venta consultiva de productos financieros por canales digitales: prospección, seguimiento en CRM y cierre remoto. Trabajará de la mano del equipo de marketing para convertir leads calificados.",
-      nivelPuesto: "Semi-Senior", anosExp: 3, espRequeridas: ["Ventas B2C"], espOpcionales: ["CRM y Fidelización", "Servicio al Cliente"],
-      hardSkills: ["CRM", "Negociación comercial", "Prospección en frío"], softSkills: ["Comunicación efectiva", "Orientación a resultados", "Empatía"],
-      aptitudes: ["Orientación al servicio", "Tolerancia a la presión"],
-      killer: [{ q: "¿Cuentas con disponibilidad para laborar sábados medio día?" }, { q: "¿Tienes al menos 2 años de experiencia en venta de productos financieros o intangibles?" }],
-      ubicacionTrabajo: "CDMX", modalidad: "Híbrido", ubicacionCandidato: "CDMX", radioKm: 30,
+      titulo: "Cajero Supervisor", area: "Atención a Clientes",
+      descripcion: "Supervisa la operación de cajas en sucursal: arqueos, manejo de efectivo, apertura y cierre de cajas, y atención al cliente. Da coaching a un equipo de cajeros y asegura cuadres correctos y una experiencia de servicio excelente.",
+      nivelPuesto: "Semi-Senior", anosExp: 3, espRequeridas: ["Servicio al Cliente"], espOpcionales: ["Ventas B2C", "Cobranza"],
+      hardSkills: ["Excel avanzado", "CRM"], softSkills: ["Empatía", "Comunicación efectiva"],
+      aptitudes: ["Orientación al servicio", "Atención al detalle", "Tolerancia a la presión"],
+      ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX", radioKm: 25,
       salarioMin: 14000, salarioMax: 19000, horario: "9:00 – 18:00", numVacantes: 2,
-      tipoSede: "Corporativo", sede: "Corporativo Insurgentes Sur (CDMX)", unidadNegocio: "Ventas Digitales · Banca de Consumo", edadMin: 22, edadMax: 45,
+      tipoSede: "Sucursal", sede: "Sucursal Centro Histórico (CDMX)", unidadNegocio: "Operación de Sucursales · Banca de Consumo", edadMin: 22, edadMax: 50,
     }),
   },
   {
@@ -132,15 +131,14 @@ export const SEED_VACANTES: Vacante[] = [
   {
     id: "V-1035", estado: "abierta", formadorId: "F2", creada: "18 jun 2026", creadaTs: new Date("2026-06-18").getTime(), pipeline: {}, historial: ["Aprobada por el formador el 19 jun 2026"], cambios: null, archivados: [],
     req: crearRequisito({
-      titulo: "Analista de Datos Sr", area: "Datos y Analítica",
-      descripcion: "Construcción de modelos analíticos y tableros para la dirección de crédito. Trabajo cercano con negocio para traducir preguntas en datos.",
-      nivelPuesto: "Senior", anosExp: 5, espRequeridas: ["Ciencia de Datos", "Business Intelligence"], espOpcionales: ["Infraestructura TI"],
-      hardSkills: ["Python", "SQL", "Power BI"], softSkills: ["Pensamiento analítico", "Comunicación efectiva"],
-      aptitudes: ["Razonamiento numérico", "Razonamiento lógico"],
-      killer: [{ q: "¿Dominas SQL a nivel avanzado (ventanas, CTEs, optimización)?" }],
-      ubicacionTrabajo: "CDMX", modalidad: "Híbrido", ubicacionCandidato: "CDMX", radioKm: 50,
-      salarioMin: 35000, salarioMax: 45000, horario: "9:00 – 18:00", numVacantes: 1,
-      tipoSede: "Corporativo", sede: "Corporativo Santa Fe (CDMX)", unidadNegocio: "Dirección de Crédito", edadNoRelevante: true,
+      titulo: "Desarrollador Frontend", area: "Tecnología",
+      descripcion: "Desarrollo de interfaces web para productos financieros digitales: componentes accesibles y reutilizables, integración con APIs y colaboración con diseño y backend en una célula ágil.",
+      nivelPuesto: "Semi-Senior", anosExp: 3, espRequeridas: ["Desarrollo Frontend"], espOpcionales: ["UX/UI"],
+      hardSkills: ["React", "Node.js"], softSkills: ["Trabajo en equipo", "Atención al detalle"],
+      aptitudes: ["Razonamiento lógico", "Creatividad"],
+      ubicacionTrabajo: "CDMX", modalidad: "Híbrido", ubicacionCandidato: "CDMX", radioKm: 30,
+      salarioMin: 30000, salarioMax: 42000, horario: "9:00 – 18:00", numVacantes: 1,
+      tipoSede: "Corporativo", sede: "Corporativo Insurgentes Sur (CDMX)", unidadNegocio: "Tecnología · Canales Digitales", edadMin: 22, edadMax: 50,
     }),
   },
 ];
@@ -155,7 +153,7 @@ export const ADMIN = { id: "A1", nombre: "Carlos Ruiz Delgado", puesto: "Adminis
 export const SEED_NOTIFICACIONES: Notificacion[] = [
   {
     id: "N1", para: { tipo: "formador", id: "F1" }, titulo: "Se te liberó una nueva vacante",
-    msg: 'La vacante V-1042 · "Ejecutivo de Ventas Digitales" fue asignada a ti. Revisa el descriptivo, solicita cambios o apruébala para iniciar la búsqueda.',
+    msg: 'La vacante V-1042 · "Cajero Supervisor" fue asignada a ti. Revisa el descriptivo, solicita cambios o apruébala para iniciar la búsqueda.',
     vacId: "V-1042", fecha: "01 jul 2026 · 09:12", leida: false,
   },
 ];
