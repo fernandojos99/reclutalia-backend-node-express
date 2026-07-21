@@ -6,10 +6,14 @@ import { candidatoController } from "../controllers/candidatoController";
 import { poolController } from "../controllers/poolController";
 import { formadorController, notificacionController } from "../controllers/lecturaControllers";
 import { agentController } from "../controllers/agentController";
+import { adminController } from "../controllers/adminController";
 
 export const apiRouter = Router();
 
 apiRouter.get("/health", (_req, res) => res.json({ ok: true }));
+
+// ── Admin: reset destructivo al seed (protegido por token) ──
+apiRouter.post("/admin/reset-seed", adminController.resetSeed);
 
 // ── Agente IA (chat por SSE) ──
 apiRouter.post("/agente/chat", agentController.chat);

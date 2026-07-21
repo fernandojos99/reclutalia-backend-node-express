@@ -26,4 +26,8 @@ export const env = {
   // Cadena de conexión completa (postgresql://...). Si está vacía, el backend funciona
   // con la semilla en memoria (sin persistencia), útil para desarrollo sin BD.
   dbUrl: process.env.DATABASE_URL ?? "",
+
+  // Token para el endpoint destructivo de reset (POST /api/admin/reset-seed).
+  // Si está vacío, el endpoint queda DESHABILITADO (responde 403).
+  resetToken: process.env.RESET_TOKEN ?? "",
 } as const;

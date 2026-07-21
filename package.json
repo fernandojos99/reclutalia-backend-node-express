@@ -8,7 +8,8 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx --env-file=.env src/db/scripts/migrate.ts",
-    "db:seed": "tsx --env-file=.env src/db/scripts/seed.ts"
+    "db:seed": "tsx --env-file=.env src/db/scripts/seed.ts",
+    "db:reset": "tsx --env-file=.env src/db/scripts/reset.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
