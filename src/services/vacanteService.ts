@@ -56,7 +56,7 @@ export const vacanteService = {
     if (!formador) throw new NotFoundError(`Formador ${formadorId} no encontrado`);
 
     const vacante: Vacante = {
-      id: vacanteRepository.nextId(), estado: "asignada", formadorId, creada: hoy(), req: coercionarReq(req),
+      id: vacanteRepository.nextId(), estado: "asignada", formadorId, creada: hoy(), creadaTs: Date.now(), req: coercionarReq(req),
       pipeline: {}, historial: [`Creada por el administrador el ${hoy()}`], cambios: null, archivados: [],
     };
     vacanteRepository.insert(vacante);

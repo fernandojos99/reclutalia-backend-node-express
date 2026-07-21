@@ -102,7 +102,7 @@ Object.assign(SEED_CANDIDATOS.find((c) => c.id === 2)!, {
 
 export const SEED_VACANTES: Vacante[] = [
   {
-    id: "V-1042", estado: "asignada", formadorId: "F1", creada: "01 jul 2026", pipeline: {}, historial: [], cambios: null, archivados: [],
+    id: "V-1042", estado: "asignada", formadorId: "F1", creada: "01 jul 2026", creadaTs: new Date("2026-07-01").getTime(), pipeline: {}, historial: [], cambios: null, archivados: [],
     req: crearRequisito({
       titulo: "Ejecutivo de Ventas Digitales", area: "Ventas",
       descripcion: "Responsable de la venta consultiva de productos financieros por canales digitales: prospección, seguimiento en CRM y cierre remoto. Trabajará de la mano del equipo de marketing para convertir leads calificados.",
@@ -116,7 +116,7 @@ export const SEED_VACANTES: Vacante[] = [
     }),
   },
   {
-    id: "V-1038", estado: "abierta", formadorId: "F1", creada: "24 jun 2026", pipeline: {}, historial: ["Aprobada por el formador el 26 jun 2026"], cambios: null, archivados: [],
+    id: "V-1038", estado: "abierta", formadorId: "F1", creada: "24 jun 2026", creadaTs: new Date("2026-06-24").getTime(), pipeline: {}, historial: ["Aprobada por el formador el 26 jun 2026"], cambios: null, archivados: [],
     req: crearRequisito({
       titulo: "Coordinador de Atención a Clientes", area: "Atención a Clientes",
       descripcion: "Liderar una célula de 20 agentes de atención omnicanal, asegurando niveles de servicio, calidad y coaching continuo al equipo.",
@@ -130,7 +130,7 @@ export const SEED_VACANTES: Vacante[] = [
     }),
   },
   {
-    id: "V-1035", estado: "abierta", formadorId: "F2", creada: "18 jun 2026", pipeline: {}, historial: ["Aprobada por el formador el 19 jun 2026"], cambios: null, archivados: [],
+    id: "V-1035", estado: "abierta", formadorId: "F2", creada: "18 jun 2026", creadaTs: new Date("2026-06-18").getTime(), pipeline: {}, historial: ["Aprobada por el formador el 19 jun 2026"], cambios: null, archivados: [],
     req: crearRequisito({
       titulo: "Analista de Datos Sr", area: "Datos y Analítica",
       descripcion: "Construcción de modelos analíticos y tableros para la dirección de crédito. Trabajo cercano con negocio para traducir preguntas en datos.",

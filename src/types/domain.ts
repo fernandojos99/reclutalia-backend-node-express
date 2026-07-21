@@ -174,6 +174,8 @@ export interface Vacante {
   estado: string;
   formadorId: string;
   creada: string;
+  /** Timestamp de creación (ms) para calcular "días activa". */
+  creadaTs?: number;
   req: Requisito;
   pipeline: Record<string, PipelineEntry>;
   historial: string[];
