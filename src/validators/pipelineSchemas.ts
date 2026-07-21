@@ -24,7 +24,7 @@ export const registrarEntrevistaSchema = z.object({
   resumen: texto,
   feedback: texto,
   externa: z.boolean(),
-  calificacion: z.number().min(1).max(10),
+  calificacion: z.number().min(1).max(5),
 }).strict();
 
 export const agendarMedicoSchema = z.object({

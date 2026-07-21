@@ -78,6 +78,8 @@ const catalogosPayload = () => ({
   sedes: catalogs.SEDES,
   tiposVacante: catalogs.TIPOS_VACANTE,
   especialidades: catalogs.ESPECIALIDADES,
+  profesiones: catalogs.PROFESIONES,
+  turnos: catalogs.TURNOS,
   hardSkills: catalogs.HARD_SKILLS,
   softSkills: catalogs.SOFT_SKILLS,
   fases: catalogs.FASES,
@@ -360,7 +362,7 @@ export const TOOLS: ToolDef[] = [
     name: "registrar_entrevista",
     description: "Registra el resultado de la entrevista del formador con el candidato.",
     roles: ["admin", "formador"],
-    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), resumen: str("Resumen"), feedback: str("Feedback"), externa: bool("¿Entrevista externa?"), calificacion: int("Calificación 1-10") }, ["vacId", "cid", "resumen", "feedback", "externa", "calificacion"]),
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), resumen: str("Resumen"), feedback: str("Feedback"), externa: bool("¿Entrevista externa?"), calificacion: int("Calificación 1-5 (estrellas)") }, ["vacId", "cid", "resumen", "feedback", "externa", "calificacion"]),
     run: (a) => pipelineService.registrarEntrevista(String(a.vacId), Number(a.cid), { resumen: String(a.resumen), feedback: String(a.feedback), externa: !!a.externa, calificacion: Number(a.calificacion) }),
   },
   {
