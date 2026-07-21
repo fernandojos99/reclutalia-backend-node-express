@@ -20,6 +20,23 @@ function obtenerVacante(vacId: string): Vacante {
   return v;
 }
 
+const aArray = (v: unknown): unknown[] => (Array.isArray(v) ? v : v == null || v === "" ? [] : [v]);
+
+/**
+ * Coacciona los campos de lista del Requisito a arrays (el path HTTP ya valida con zod `.strict()`;
+ * esto protege el path del agente, que llama al servicio directamente).
+ */
+function coercionarReq(req: Requisito): Requisito {
+  req.espRequeridas = aArray(req.espRequeridas) as string[];
+  req.espOpcionales = aArray(req.espOpcionales) as string[];
+  req.hardSkills = aArray(req.hardSkills) as string[];
+  req.softSkills = aArray(req.softSkills) as string[];
+  req.aptitudes = aArray(req.aptitudes) as string[];
+  req.dias = aArray(req.dias) as string[];
+  req.killer = aArray(req.killer).map((q) => (typeof q === "string" ? { q } : q)) as { q: string }[];
+  return req;
+}
+
 export const vacanteService = {
   listar(): Vacante[] {
     return vacanteRepository.findAll();
@@ -39,7 +56,7 @@ export const vacanteService = {
     if (!formador) throw new NotFoundError(`Formador ${formadorId} no encontrado`);
 
     const vacante: Vacante = {
-      id: uid("V-2"), estado: "asignada", formadorId, creada: hoy(), req,
+      id: uid("V-2"), estado: "asignada", formadorId, creada: hoy(), req: coercionarReq(req),
       pipeline: {}, historial: [`Creada por el administrador el ${hoy()}`], cambios: null, archivados: [],
     };
     vacanteRepository.insert(vacante);
@@ -77,7 +94,7 @@ export const vacanteService = {
   editar(vacId: string, req: Requisito, rechazados: string[] = [], nota = ""): Vacante {
     const v = obtenerVacante(vacId);
     const prev = v.cambios;
-    v.req = req;
+    v.req = coercionarReq(req);
     const eraCambios = v.estado === "cambios";
     const nombreCampos = (ks: string[]): string => ks.map((k) => CAMPOS_DESC[k] ?? k).join(", ");
 

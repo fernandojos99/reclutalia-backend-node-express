@@ -2,7 +2,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { candidatoService } from "../services/candidatoService";
 import { parseBody, parseNumericId } from "../utils/validate";
-import { guardarCandidatoSchema } from "../validators/pipelineSchemas";
 import { candidatoBodySchema } from "../validators/crudSchemas";
 import type { Candidato } from "../types/domain";
 
@@ -28,7 +27,7 @@ export const candidatoController = {
   },
   guardar(req: Request, res: Response, next: NextFunction): void {
     try {
-      const { candidato } = parseBody(guardarCandidatoSchema, req.body);
+      const { candidato } = parseBody(candidatoBodySchema, req.body);
       res.json(candidatoService.guardar(candidato as unknown as Candidato));
     } catch (err) { next(err); }
   },

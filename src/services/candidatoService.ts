@@ -5,21 +5,31 @@
 import { candidatoRepository } from "../repositories/candidatoRepository";
 import { vacanteRepository } from "../repositories/vacanteRepository";
 import { formadorRepository } from "../repositories/formadorRepository";
-import { NotFoundError } from "../errors/AppError";
+import { NotFoundError, ValidationError } from "../errors/AppError";
+import { candidatoFieldsSchema } from "../validators/crudSchemas";
 import { hoy } from "../utils/format";
 import type { Candidato } from "../types/domain";
 
-/** Candidato con valores por defecto; se le hace merge de los datos provistos. */
-function nuevoCandidato(datos: Partial<Candidato>): Candidato {
+/** Valores por defecto de un candidato (sin id). */
+function baseCandidato(): Omit<Candidato, "id"> {
   return {
     nombre: "Nuevo candidato", tipo: "externo", area: "Operaciones", puesto: "",
     nivel: "Junior", exp: 0, edu: "Licenciatura titulado", ciudad: "CDMX", modalidad: "Presencial",
     salario: 12000, esp: [], hard: [], soft: [], resumen: "", email: "", tel: "",
     experiencia: [], educacion: [], intereses: [], foto: null, favoritos: [], psicometrico: null,
     docsPerfil: { ine: null, curp: null, rfc: null, domicilio: null, estudios: null, certificaciones: [], cv: null },
-    ...datos,
-    id: 0, // se ignora cualquier id provisto: el repo asigna uno nuevo
   };
+}
+
+/**
+ * Valida y COACCIONA los datos de entrada con zod (campos de lista → array, numéricos → número).
+ * Es la ÚNICA barrera de datos: se aplica tanto en el path HTTP como cuando la tool del agente
+ * llama al servicio directamente. Lanza ValidationError (→ 400) si algún tipo es irreparable.
+ */
+function sanitizar(input: Partial<Candidato>): Partial<Candidato> {
+  const r = candidatoFieldsSchema.safeParse(input);
+  if (!r.success) throw new ValidationError("Datos de candidato inválidos", r.error.format());
+  return r.data as Partial<Candidato>;
 }
 
 export const candidatoService = {
@@ -35,12 +45,14 @@ export const candidatoService = {
 
   /** Reemplaza el candidato completo (equiv. `ACT.guardarCandidato`). */
   guardar(candidato: Candidato): Candidato {
-    return candidatoRepository.upsert(candidato);
+    const limpio = sanitizar(candidato);
+    return candidatoRepository.upsert({ ...baseCandidato(), ...limpio, id: candidato.id } as Candidato);
   },
 
   /** Crea un candidato nuevo (id autogenerado) con los datos provistos sobre la plantilla. */
   crear(datos: Partial<Candidato>): Candidato {
-    return candidatoRepository.upsert(nuevoCandidato(datos));
+    const limpio = sanitizar(datos);
+    return candidatoRepository.upsert({ ...baseCandidato(), ...limpio, id: 0 } as Candidato);
   },
 
   /** Elimina un candidato y limpia sus referencias en vacantes y formadores (cascade). */
