@@ -9,7 +9,7 @@ import { formadorRepository } from "../repositories/formadorRepository";
 import { notificacionService } from "./notificacionService";
 import { matchScore } from "./matchService";
 import { candidatoService } from "./candidatoService";
-import { NotFoundError } from "../errors/AppError";
+import { NotFoundError, ValidationError } from "../errors/AppError";
 import { hoy, money, proximosDias } from "../utils/format";
 import { numEmpleado, slotTomado } from "../utils/deterministic";
 import { DIRECCION_CORP, SUCURSALES_MEDICAS } from "../constants/catalogs";
@@ -36,11 +36,25 @@ function obtenerPipeline(v: Vacante, cid: number): PipelineEntry {
 const nombreFormador = (v: Vacante): string =>
   formadorRepository.findById(v.formadorId)?.nombre ?? "El formador";
 
+/** Estados en los que el candidato ya NO participa activamente (proceso terminado). */
+const ESTADOS_TERMINALES = ["descartado", "filtrado", "rechazado", "contratado"];
+
+/** True si el candidato tiene un proceso ACTIVO (no terminal) en otra vacante distinta a `exceptoVacId`. */
+function tieneProcesoActivo(cid: number, exceptoVacId?: string): boolean {
+  return vacanteRepository.findAll().some((v) => {
+    const p = v.pipeline[cid];
+    return v.id !== exceptoVacId && p && !ESTADOS_TERMINALES.includes(p.estado);
+  });
+}
+
 export const pipelineService = {
   /** El formador invita a un candidato del pool a postularse. */
   invitar(vacId: string, cid: number, mensaje: string): Vacante {
     const v = obtenerVacante(vacId);
     const c = obtenerCandidato(cid);
+    if (tieneProcesoActivo(cid, vacId)) {
+      throw new ValidationError(`${c.nombre} ya está en un proceso de selección activo en otra vacante.`);
+    }
     const m = (v.pool?.find((p) => p.cid === cid)?.match) ?? 50;
     v.pipeline[cid] = {
       estado: "invitado", match: m, mensaje, docsFiltro: {}, docsContrato: {},
@@ -93,6 +107,9 @@ export const pipelineService = {
   postularDirecto(vacId: string, cid: number, mensaje: string): Vacante {
     const v = obtenerVacante(vacId);
     const c = obtenerCandidato(cid);
+    if (tieneProcesoActivo(cid, vacId)) {
+      throw new ValidationError("Ya tienes un proceso de selección activo. No puedes postularte a otra vacante hasta que concluya.");
+    }
     const m = matchScore(c, v.req);
     v.pipeline[cid] = {
       estado: "postulado", match: m, mensaje, docsFiltro: {}, docsContrato: {},
@@ -421,6 +438,50 @@ export const pipelineService = {
     const v = obtenerVacante(vacId);
     obtenerPipeline(v, cid); // lanza si no está en el pipeline
     delete v.pipeline[cid];
+    return v;
+  },
+
+  /**
+   * (Herramienta del formador) Retrocede una etapa el proceso de la vacante: cada candidato activo
+   * baja un paso del pipeline y se limpian los datos generados en los pasos deshechos. Si la vacante
+   * estaba cerrada, se reabre. Es una acción de demo (se pierde el avance de esos pasos).
+   */
+  retrocederEtapa(vacId: string): Vacante {
+    const v = obtenerVacante(vacId);
+    const ORDEN = [
+      "invitado", "postulado", "filtros_ok", "video_ia", "evaluado", "slots_enviados",
+      "agendado", "entrevistado", "seleccionado", "docs_completos", "oferta_enviada",
+      "oferta_aceptada", "contratado",
+    ];
+    const PREV: Record<string, string> = {
+      postulado: "invitado", filtros_ok: "postulado", video_ia: "filtros_ok", evaluado: "filtros_ok",
+      slots_enviados: "evaluado", agendado: "slots_enviados", entrevistado: "agendado",
+      seleccionado: "entrevistado", docs_completos: "seleccionado", oferta_enviada: "docs_completos",
+      oferta_aceptada: "oferta_enviada", contratado: "oferta_aceptada",
+    };
+
+    let cambiados = 0;
+    for (const p of Object.values(v.pipeline)) {
+      const nuevo = PREV[p.estado];
+      if (!nuevo) continue;
+      const ni = ORDEN.indexOf(nuevo);
+      const antesDe = (e: string) => ni < ORDEN.indexOf(e);
+      // Limpiar datos de pasos posteriores al nuevo estado.
+      if (antesDe("evaluado")) delete p.matchIA;
+      if (antesDe("slots_enviados")) { delete p.slots; delete p.modalidadEnt; }
+      if (antesDe("agendado")) { delete p.slotElegido; delete p.teams; }
+      if (antesDe("entrevistado")) { delete p.entrevista; delete p.matchFinal; }
+      if (antesDe("oferta_enviada")) delete p.oferta;
+      if (antesDe("contratado")) delete p.numEmpleado;
+      p.estado = nuevo;
+      p.historial.push(`El formador retrocedió la etapa del proceso · ${hoy()}`);
+      cambiados++;
+    }
+    if (cambiados === 0) {
+      throw new ValidationError("No hay candidatos en una etapa que se pueda retroceder.");
+    }
+    if (v.estado === "cerrada") v.estado = "abierta";
+    v.historial.push(`Etapa del proceso retrocedida por el formador · ${hoy()}`);
     return v;
   },
 };

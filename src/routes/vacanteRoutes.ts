@@ -13,6 +13,7 @@ vacanteRoutes.post("/", vacanteController.crear);
 vacanteRoutes.patch("/:id", vacanteController.editar);
 vacanteRoutes.post("/:id/cambios", vacanteController.solicitarCambios);
 vacanteRoutes.post("/:id/aprobar", vacanteController.aprobar);
+vacanteRoutes.post("/:id/reset-etapa", pipelineController.retrocederEtapa);
 vacanteRoutes.post("/:id/solicitar-mas", vacanteController.solicitarMas);
 vacanteRoutes.delete("/:id", vacanteController.eliminar);
 

@@ -503,6 +503,13 @@ export const TOOLS: ToolDef[] = [
     parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato") }, ["vacId", "cid"]),
     run: (a) => pipelineService.quitarDelPipeline(String(a.vacId), Number(a.cid)),
   },
+  {
+    name: "retroceder_etapa",
+    description: "Retrocede una etapa el proceso de una vacante: cada candidato activo baja un paso del pipeline (acción de demo; se pierde el avance de esos pasos).",
+    roles: ["admin", "formador"],
+    parameters: obj({ vacId: str("ID vacante") }, ["vacId"]),
+    run: (a) => pipelineService.retrocederEtapa(String(a.vacId)),
+  },
 ];
 
 /** Tools visibles para un rol, en el formato function-calling de la API. */
