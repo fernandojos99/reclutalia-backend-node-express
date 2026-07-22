@@ -467,11 +467,15 @@ export const pipelineService = {
       const ni = ORDEN.indexOf(nuevo);
       const antesDe = (e: string) => ni < ORDEN.indexOf(e);
       // Limpiar datos de pasos posteriores al nuevo estado.
+      if (antesDe("filtros_ok")) { p.docsFiltro = {}; delete p.autorizaFiltros; }
       if (antesDe("evaluado")) delete p.matchIA;
       if (antesDe("slots_enviados")) { delete p.slots; delete p.modalidadEnt; }
       if (antesDe("agendado")) { delete p.slotElegido; delete p.teams; }
       if (antesDe("entrevistado")) { delete p.entrevista; delete p.matchFinal; }
+      // Documentos y examen médico se capturan en el paso "seleccionado": al deshacerlo se reinician.
+      if (antesDe("docs_completos")) { p.docsContrato = {}; delete p.medico; }
       if (antesDe("oferta_enviada")) delete p.oferta;
+      if (antesDe("oferta_aceptada")) delete p.cuentaBanco;
       if (antesDe("contratado")) delete p.numEmpleado;
       p.estado = nuevo;
       p.historial.push(`El formador retrocedió la etapa del proceso · ${hoy()}`);
