@@ -54,6 +54,10 @@ export const cambioFechaSchema = z.object({
   fecha: z.string().min(1).max(64),
 }).strict();
 
+export const capacitacionSchema = z.object({
+  modulo: z.string().min(1).max(120),
+}).strict();
+
 export const guardarCandidatoSchema = z.object({
   candidato: z.record(z.unknown()),
 }).strict();

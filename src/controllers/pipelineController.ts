@@ -8,7 +8,7 @@ import { parseBody, parseNumericId } from "../utils/validate";
 import {
   invitarSchema, rechazarSchema, postularDirectoSchema, enviarSlotsSchema,
   confirmarSlotSchema, registrarEntrevistaSchema, agendarMedicoSchema, enviarOfertaSchema,
-  docContratoSchema, cuentaBancoSchema, cambioFechaSchema,
+  docContratoSchema, cuentaBancoSchema, cambioFechaSchema, capacitacionSchema,
 } from "../validators/pipelineSchemas";
 
 const vac = (req: Request): string => req.params.id;
@@ -103,6 +103,12 @@ export const pipelineController = {
     try {
       const { fecha } = parseBody(cambioFechaSchema, req.body);
       res.json(pipelineService.solicitarCambioFecha(vac(req), cand(req), fecha));
+    } catch (err) { next(err); }
+  },
+  marcarCapacitacion(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const { modulo } = parseBody(capacitacionSchema, req.body);
+      res.json(pipelineService.marcarCapacitacion(vac(req), cand(req), modulo));
     } catch (err) { next(err); }
   },
   docsContrato(req: Request, res: Response, next: NextFunction): void {

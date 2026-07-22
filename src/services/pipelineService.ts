@@ -311,6 +311,15 @@ export const pipelineService = {
     return v;
   },
 
+  /** El candidato marca un módulo de inducción/capacitación como completado (lo ve también el formador). */
+  marcarCapacitacion(vacId: string, cid: number, modulo: string): Vacante {
+    const v = obtenerVacante(vacId);
+    const p = obtenerPipeline(v, cid);
+    if (!p.capacitacion) p.capacitacion = [];
+    if (!p.capacitacion.includes(modulo)) p.capacitacion.push(modulo);
+    return v;
+  },
+
   /** El candidato solicita/actualiza su fecha de ingreso tras aceptar la oferta. */
   solicitarCambioFecha(vacId: string, cid: number, fecha: string): Vacante {
     const v = obtenerVacante(vacId);
