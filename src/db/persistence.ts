@@ -27,15 +27,33 @@ export interface Snapshot {
 
 let avisoVacio = false;
 
+/** Reintenta una operación de BD ante errores de conexión transitorios (pooler serverless). */
+async function withRetry<T>(fn: () => Promise<T>, intentos = 3): Promise<T> {
+  let ultimo: unknown;
+  for (let i = 0; i < intentos; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      ultimo = e;
+      const msg = (e as Error).message || "";
+      const transitorio = /ECONNRESET|socket|terminated|timeout|Connection|CONNECT/i.test(msg);
+      if (!transitorio || i === intentos - 1) throw e;
+      await new Promise((r) => setTimeout(r, 200 * (i + 1)));
+    }
+  }
+  throw ultimo;
+}
+
 /** Re-hidrata las 4 colecciones desde la BD al store en memoria. Se llama en cada request. */
 export async function refreshStore(): Promise<void> {
   if (!sql) return;
-  const [cands, forms, vacs, notifs] = await Promise.all([
-    sql`select data from candidatos order by id desc`,
-    sql`select data from formadores`,
-    sql`select data from vacantes`,
-    sql`select data from notificaciones`,
-  ]);
+  const db = sql;
+  const [cands, forms, vacs, notifs] = await withRetry(() => Promise.all([
+    db`select data from candidatos order by id desc`,
+    db`select data from formadores`,
+    db`select data from vacantes`,
+    db`select data from notificaciones`,
+  ]));
 
   if (cands.length + forms.length + vacs.length + notifs.length === 0) {
     if (!avisoVacio) {
@@ -91,7 +109,7 @@ export async function persistChanged(snap: Snapshot): Promise<void> {
   if (!dc.length && !df.length && !dv.length && !dn.length &&
       !delC.length && !delF.length && !delV.length && !delN.length) return; // nada que hacer
 
-  await db.begin(async (tx) => {
+  await withRetry(() => db.begin(async (tx) => {
     if (dc.length) {
       const rows = dc.map((c) => ({ id: c.id, tipo: c.tipo, data: json(c) }));
       await tx`insert into candidatos ${tx(rows, "id", "tipo", "data")}
@@ -117,5 +135,5 @@ export async function persistChanged(snap: Snapshot): Promise<void> {
     if (delF.length) await tx`delete from formadores where id in ${tx(delF)}`;
     if (delV.length) await tx`delete from vacantes where id in ${tx(delV)}`;
     if (delN.length) await tx`delete from notificaciones where id in ${tx(delN)}`;
-  });
+  }));
 }
