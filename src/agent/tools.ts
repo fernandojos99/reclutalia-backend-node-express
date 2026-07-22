@@ -264,7 +264,7 @@ export const TOOLS: ToolDef[] = [
     parameters: obj({
       formadorId: str("ID del formador al que se asigna (ej. 'F1')"),
       titulo: str("Título del puesto"), area: str("Área"), descripcion: str("Descripción"),
-      nivelPuesto: str("Nivel (Junior, Semi-Senior, Senior…)"), anosExp: int("Años de experiencia"),
+      nivelPuesto: str("Nivel (Junior, Senior, Gerente…)"), anosExp: int("Años de experiencia"),
       salarioMin: int("Sueldo mínimo mensual MXN"), salarioMax: int("Sueldo máximo mensual MXN"),
       ubicacionTrabajo: str("Ciudad"), modalidad: str("Presencial | Híbrido | Remoto"), numVacantes: int("Nº de plazas"),
     }, ["formadorId", "titulo", "area"]),

@@ -9,7 +9,7 @@ export const AREAS = [
 ] as const;
 
 export const NIVELES = [
-  "Practicante", "Junior", "Semi-Senior", "Senior", "Gerente", "Directivo",
+  "Practicante", "Junior", "Senior", "Gerente", "Directivo",
 ] as const;
 
 export const EDUCACION = [
