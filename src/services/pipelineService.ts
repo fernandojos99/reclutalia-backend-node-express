@@ -311,6 +311,22 @@ export const pipelineService = {
     return v;
   },
 
+  /** El candidato solicita/actualiza su fecha de ingreso tras aceptar la oferta. */
+  solicitarCambioFecha(vacId: string, cid: number, fecha: string): Vacante {
+    const v = obtenerVacante(vacId);
+    const p = obtenerPipeline(v, cid);
+    const c = obtenerCandidato(cid);
+    if (p.oferta) p.oferta.fecha = fecha;
+    p.historial.push(`El candidato solicitó ingresar el ${fecha} · ${hoy()}`);
+    notificacionService.emitir(
+      { tipo: "formador", id: v.formadorId },
+      "Cambio de fecha de ingreso solicitado",
+      `${c.nombre} solicitó ingresar el ${fecha} para "${v.req.titulo}". La fecha de ingreso se actualizó.`,
+      v.id,
+    );
+    return v;
+  },
+
   /** El candidato completa su documentación de contratación. */
   docsContratoListos(vacId: string, cid: number): Vacante {
     const v = obtenerVacante(vacId);

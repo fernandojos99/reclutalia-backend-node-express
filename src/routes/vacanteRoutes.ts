@@ -41,6 +41,7 @@ vacanteRoutes.post("/:id/pipeline/:cid/medico/validar", pipelineController.valid
 vacanteRoutes.post("/:id/pipeline/:cid/recordar-docs", pipelineController.recordarDocs);
 vacanteRoutes.post("/:id/pipeline/:cid/doc-contrato", pipelineController.setDocContrato);
 vacanteRoutes.post("/:id/pipeline/:cid/cuenta", pipelineController.setCuentaBanco);
+vacanteRoutes.post("/:id/pipeline/:cid/oferta/fecha", pipelineController.solicitarCambioFecha);
 vacanteRoutes.post("/:id/pipeline/:cid/docs-contrato", pipelineController.docsContrato);
 vacanteRoutes.post("/:id/pipeline/:cid/oferta", pipelineController.enviarOferta);
 vacanteRoutes.post("/:id/pipeline/:cid/oferta/aceptar", pipelineController.aceptarOferta);
