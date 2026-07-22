@@ -92,6 +92,56 @@ export const vacanteService = {
     return v;
   },
 
+  /**
+   * El formador propone editar el descriptivo (secciones «El puesto» / «Perfil del candidato»).
+   * No se aplica: queda pendiente de que el admin lo confirme o rechace (ver `resolverEdicion`).
+   */
+  solicitarEdicion(vacId: string, req: Requisito, resumen: Record<string, string>): Vacante {
+    const v = obtenerVacante(vacId);
+    if (v.estado !== "cambios") v.cambiosDesde = v.estado;
+    v.estado = "cambios";
+    v.cambios = resumen;
+    v.cambiosReq = coercionarReq(req);
+    const n = Object.keys(resumen).length;
+    v.historial.push(`El formador propuso cambios al descriptivo (${n} campo${n === 1 ? "" : "s"}) · ${hoy()}`);
+    notificacionService.emitir(
+      { tipo: "admin", id: "A1" },
+      `Cambios propuestos en ${vacId}`,
+      `El formador propuso ajustes al descriptivo de "${v.req.titulo}". Revísalos para confirmarlos o rechazarlos.`,
+      v.id,
+    );
+    return v;
+  },
+
+  /** El admin confirma (aplica el requisito propuesto) o rechaza (lo descarta) la edición del formador. */
+  resolverEdicion(vacId: string, aprobar: boolean, nota = ""): Vacante {
+    const v = obtenerVacante(vacId);
+    const propuesto = v.cambiosReq;
+    v.estado = v.cambiosDesde ?? "asignada";
+    v.cambios = null;
+    v.cambiosReq = null;
+    delete v.cambiosDesde;
+    if (aprobar && propuesto) {
+      v.req = propuesto;
+      v.historial.push(`El administrador confirmó los cambios del descriptivo${nota ? `: "${nota}"` : ""} · ${hoy()}`);
+      notificacionService.emitir(
+        { tipo: "formador", id: v.formadorId },
+        "Cambios confirmados",
+        `El administrador confirmó tus cambios al descriptivo de "${v.req.titulo}".${nota ? ` Nota: "${nota}".` : ""}`,
+        v.id,
+      );
+    } else {
+      v.historial.push(`El administrador rechazó los cambios del descriptivo${nota ? `: "${nota}"` : ""} · ${hoy()}`);
+      notificacionService.emitir(
+        { tipo: "formador", id: v.formadorId },
+        "Cambios rechazados",
+        `El administrador no aplicó los cambios que propusiste al descriptivo de "${v.req.titulo}".${nota ? ` Nota: "${nota}".` : ""}`,
+        v.id,
+      );
+    }
+    return v;
+  },
+
   /** Admin reenvía con cambios aplicados/rechazados + nota opcional (equiv. `ACT.editarVacante`). */
   editar(vacId: string, req: Requisito, rechazados: string[] = [], nota = ""): Vacante {
     const v = obtenerVacante(vacId);

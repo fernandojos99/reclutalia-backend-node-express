@@ -6,6 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 import { vacanteService } from "../services/vacanteService";
 import {
   crearVacanteSchema, editarVacanteSchema, solicitarCambiosSchema, solicitarMasSchema,
+  solicitarEdicionSchema, resolverEdicionSchema,
 } from "../validators/vacanteSchemas";
 import { ValidationError } from "../errors/AppError";
 import type { z } from "zod";
@@ -51,6 +52,20 @@ export const vacanteController = {
     try {
       const { cambios } = parseBody(solicitarCambiosSchema, req.body);
       res.json(vacanteService.solicitarCambios(req.params.id, cambios));
+    } catch (err) { next(err); }
+  },
+
+  solicitarEdicion(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const { req: requisito, resumen } = parseBody(solicitarEdicionSchema, req.body);
+      res.json(vacanteService.solicitarEdicion(req.params.id, requisito, resumen));
+    } catch (err) { next(err); }
+  },
+
+  resolverEdicion(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const { aprobar, nota } = parseBody(resolverEdicionSchema, req.body);
+      res.json(vacanteService.resolverEdicion(req.params.id, aprobar, nota));
     } catch (err) { next(err); }
   },
 

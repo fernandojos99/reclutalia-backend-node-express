@@ -12,6 +12,8 @@ vacanteRoutes.get("/:id", vacanteController.obtener);
 vacanteRoutes.post("/", vacanteController.crear);
 vacanteRoutes.patch("/:id", vacanteController.editar);
 vacanteRoutes.post("/:id/cambios", vacanteController.solicitarCambios);
+vacanteRoutes.post("/:id/solicitar-edicion", vacanteController.solicitarEdicion);
+vacanteRoutes.post("/:id/resolver-edicion", vacanteController.resolverEdicion);
 vacanteRoutes.post("/:id/aprobar", vacanteController.aprobar);
 vacanteRoutes.post("/:id/reset-etapa", pipelineController.retrocederEtapa);
 vacanteRoutes.post("/:id/solicitar-mas", vacanteController.solicitarMas);

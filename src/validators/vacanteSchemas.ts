@@ -58,6 +58,18 @@ export const solicitarCambiosSchema = z.object({
   cambios: z.union([z.string().max(MAX_TEXT_LENGTH), z.record(z.string().max(MAX_TEXT_LENGTH))]),
 }).strict();
 
+/** El formador propone una edición del descriptivo (req completo + resumen de campos cambiados). */
+export const solicitarEdicionSchema = z.object({
+  req: requisitoSchema,
+  resumen: z.record(z.string().max(MAX_TEXT_LENGTH)),
+}).strict();
+
+/** El admin confirma o rechaza la edición propuesta. */
+export const resolverEdicionSchema = z.object({
+  aprobar: z.boolean(),
+  nota: z.string().max(MAX_TEXT_LENGTH).default(""),
+}).strict();
+
 export const solicitarMasSchema = z.object({
   multiposting: z.boolean().default(false),
 }).strict();

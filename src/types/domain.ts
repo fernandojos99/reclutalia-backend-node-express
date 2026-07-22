@@ -187,6 +187,10 @@ export interface Vacante {
   pipeline: Record<string, PipelineEntry>;
   historial: string[];
   cambios: Cambios;
+  /** Requisito propuesto por el formador, pendiente de que el admin lo confirme o rechace. */
+  cambiosReq?: Requisito | null;
+  /** Estado de la vacante antes de solicitar la edición (para restaurarlo al resolver). */
+  cambiosDesde?: string;
   archivados: number[];
   pool?: PoolItem[];
 }
