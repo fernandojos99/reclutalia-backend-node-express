@@ -1,4 +1,4 @@
-/** Controlador del pool de talento del formador: archivar, favoritos y categorías. */
+/** Controlador del Marketplace de talento del formador: archivar, favoritos y categorías. */
 import type { Request, Response, NextFunction } from "express";
 import { poolService } from "../services/poolService";
 import { parseBody, parseNumericId } from "../utils/validate";

@@ -137,7 +137,7 @@ export const vacanteService = {
     v.pool = buildPool(candidatoRepository.findAll(), v.req);
     notificacionService.emitir(
       { tipo: "formador", id: v.formadorId },
-      "Tu pool de talento está listo",
+      "Tu Marketplace de talento está listo",
       `La IA analizó el marketplace y encontró ${v.pool.length} candidatos compatibles para ${v.id} · "${v.req.titulo}", ordenados por porcentaje de match.`,
       v.id,
     );

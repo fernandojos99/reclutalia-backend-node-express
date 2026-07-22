@@ -109,7 +109,7 @@ export const TOOLS: ToolDef[] = [
   },
   {
     name: "listar_candidatos",
-    description: "Lista todos los candidatos del pool de talento.",
+    description: "Lista todos los candidatos del Marketplace de talento.",
     roles: ["admin", "formador"],
     parameters: obj({}),
     run: () => candidatoService.listar(),

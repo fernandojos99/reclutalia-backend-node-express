@@ -17,7 +17,7 @@ vacanteRoutes.post("/:id/reset-etapa", pipelineController.retrocederEtapa);
 vacanteRoutes.post("/:id/solicitar-mas", vacanteController.solicitarMas);
 vacanteRoutes.delete("/:id", vacanteController.eliminar);
 
-// ── Pool de talento del formador ──
+// ── Marketplace de talento del formador ──
 vacanteRoutes.post("/:id/archivar/:cid", poolController.archivarCand);
 
 // ── Postulación directa del candidato (sin invitación previa) ──

@@ -96,7 +96,7 @@ export const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"] as const
 
 /** Proceso de la vacante en 3 fases con sub-pasos. */
 export const FASES = [
-  { nombre: "Búsqueda", subs: ["Descriptivo", "Pool de talento"] },
+  { nombre: "Búsqueda", subs: ["Descriptivo", "Marketplace de talento"] },
   { nombre: "Selección", subs: ["Ranking y terna", "Entrevistas", "Selección y documentos"] },
   { nombre: "Contratación", subs: ["Carta oferta", "Contratación"] },
 ] as const;

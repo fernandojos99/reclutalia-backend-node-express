@@ -1,5 +1,5 @@
 /**
- * Pool de talento del formador (parte del antiguo objeto `ACT`).
+ * Marketplace de talento del formador (parte del antiguo objeto `ACT`).
  * Favoritos y categorías son globales por formador; archivar es por vacante.
  */
 import { vacanteRepository } from "../repositories/vacanteRepository";

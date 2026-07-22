@@ -97,7 +97,7 @@ export const pipelineService = {
     notificacionService.emitir(
       { tipo: "formador", id: v.formadorId },
       "El candidato rechazó tu invitación",
-      `${c.nombre} declinó tu invitación a "${v.req.titulo}".${motivo ? ` Motivo: "${motivo}".` : ""} Puedes invitar a otros candidatos desde tu pool de talento.`,
+      `${c.nombre} declinó tu invitación a "${v.req.titulo}".${motivo ? ` Motivo: "${motivo}".` : ""} Puedes invitar a otros candidatos desde tu Marketplace de talento.`,
       v.id,
     );
     return v;
