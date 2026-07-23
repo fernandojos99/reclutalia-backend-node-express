@@ -51,3 +51,25 @@ create table if not exists chat_mensajes (
   creado_ts bigint not null
 );
 create index if not exists idx_chat_msg_sesion on chat_mensajes (sesion_id, id);
+
+-- ── Chat directo persona↔persona (candidato↔formador / admin↔formador), dentro de un proceso/vacante ──
+-- Solo visible para los dos participantes de la conversación.
+create table if not exists chat_conversaciones (
+  id             text primary key,                    -- determinista: dc_<vacId>_<part1>_<part2> (ordenados)
+  vac_id         text,
+  a_tipo         text not null, a_id text not null,    -- participante A
+  b_tipo         text not null, b_id text not null,    -- participante B
+  creada_ts      bigint not null,
+  actualizada_ts bigint not null
+);
+create index if not exists idx_chatconv_a on chat_conversaciones (a_tipo, a_id);
+create index if not exists idx_chatconv_b on chat_conversaciones (b_tipo, b_id);
+
+create table if not exists chat_conv_mensajes (
+  id         bigserial primary key,
+  conv_id    text not null references chat_conversaciones (id) on delete cascade,
+  autor_tipo text not null, autor_id text not null,
+  contenido  text not null,
+  creado_ts  bigint not null
+);
+create index if not exists idx_chatconvmsg on chat_conv_mensajes (conv_id, id);

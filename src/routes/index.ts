@@ -7,6 +7,7 @@ import { poolController } from "../controllers/poolController";
 import { formadorController, notificacionController } from "../controllers/lecturaControllers";
 import { agentController } from "../controllers/agentController";
 import { chatController } from "../controllers/chatController";
+import { directChatController } from "../controllers/directChatController";
 import { adminController } from "../controllers/adminController";
 
 export const apiRouter = Router();
@@ -26,6 +27,11 @@ apiRouter.post("/agente/sesiones", chatController.crear);
 apiRouter.patch("/agente/sesiones/:id", chatController.renombrar);
 apiRouter.delete("/agente/sesiones/:id", chatController.eliminar);
 apiRouter.get("/agente/sesiones/:id/mensajes", chatController.mensajes);
+
+// ── Chat directo persona↔persona (candidato↔formador / admin↔formador) ──
+apiRouter.get("/chat-directo/conversaciones", directChatController.conversaciones);
+apiRouter.post("/chat-directo/mensajes", directChatController.enviar);
+apiRouter.get("/chat-directo/:convId/mensajes", directChatController.mensajes);
 
 apiRouter.get("/catalogos", catalogoController.listar);
 

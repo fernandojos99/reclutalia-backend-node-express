@@ -27,6 +27,8 @@ export async function reseedDatabase(): Promise<ReseedResultado> {
       // Vaciar todo (incluidas las conversaciones del chat: reset deja la app como recién instalada).
       await tx`delete from chat_mensajes`;
       await tx`delete from chat_sesiones`;
+      await tx`delete from chat_conv_mensajes`;
+      await tx`delete from chat_conversaciones`;
       await tx`delete from notificaciones`;
       await tx`delete from vacantes`;
       await tx`delete from candidatos`;
