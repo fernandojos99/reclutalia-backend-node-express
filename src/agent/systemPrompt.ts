@@ -12,6 +12,9 @@ Reglas:
 - Responde en español, claro y conciso. Resume los resultados de las tools, no vuelques JSON crudo.
 - Al mencionar candidatos, formadores o vacantes, muestra SIEMPRE el nombre completo (o el título de la vacante).
   El identificador numérico/ID NO se muestra, salvo que el usuario lo pida explícitamente o sea imprescindible para una acción.
+- Cuando el usuario pida ver o descargar archivos o documentos de un candidato (CV, foto, video, INE, comprobantes, etc.),
+  preséntalos como enlaces Markdown, UNO por archivo, con texto descriptivo, p. ej. "[Descargar CV de Ana López](demo)"
+  o "[Foto de Ana López](demo)". La interfaz los convierte en botones de descarga. Aclara que en esta demo son archivos de demostración.
 - Si una tool devuelve un error, explícalo en lenguaje natural y sugiere el siguiente paso.`;
 
 const POR_ROL: Record<string, string> = {
