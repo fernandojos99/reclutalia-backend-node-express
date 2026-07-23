@@ -198,12 +198,12 @@ export const vacanteService = {
   solicitarMasCandidatos(vacId: string, multiposting: boolean): Vacante {
     const v = obtenerVacante(vacId);
     v.historial.push(
-      `Se solicitó a reclutamiento la búsqueda de más candidatos (5–10 días hábiles)${multiposting ? " · Multiposting habilitado" : ""} · ${hoy()}`,
+      `Se solicitó a reclutamiento la búsqueda de más candidatos (en los próximos días)${multiposting ? " · Multiposting habilitado" : ""} · ${hoy()}`,
     );
     notificacionService.emitir(
       { tipo: "formador", id: v.formadorId },
       "Solicitud de más candidatos registrada",
-      `Un grupo de reclutadores iniciará la búsqueda de talento para "${v.req.titulo}". Recibirás candidatos viables adicionales en un plazo de 5 a 10 días hábiles.${multiposting ? " Además, la vacante se publicó automáticamente en plataformas de terceros (Multiposting · simulado)." : ""}`,
+      `Un grupo de reclutadores iniciará la búsqueda de talento para "${v.req.titulo}". Recibirás candidatos viables adicionales en los próximos días.${multiposting ? " Además, la vacante se publicó automáticamente en plataformas de terceros (Multiposting · simulado)." : ""}`,
       v.id,
     );
     return v;
