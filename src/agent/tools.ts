@@ -26,6 +26,8 @@ export interface AgentContext {
   rol: Rol;
   formadorId?: string;
   candId?: number;
+  /** Etapa/pantalla actual del usuario (para respuestas contextuales a "¿qué hago ahora?"). */
+  etapa?: string;
 }
 
 interface ToolDef {

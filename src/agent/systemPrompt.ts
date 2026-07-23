@@ -36,5 +36,8 @@ export function systemPromptFor(ctx: AgentContext): string {
       : ctx.rol === "candidato"
         ? `Tu id de candidato es ${ctx.candId ?? "desconocido"}.`
         : "Actúas como administrador global.";
-  return `${BASE}\n\nPerfil actual: ${POR_ROL[ctx.rol] ?? POR_ROL.candidato}\n${identidad}`;
+  const etapa = ctx.etapa
+    ? `\nEtapa/pantalla actual del usuario: ${ctx.etapa}. Si hace una pregunta genérica (p. ej. "¿qué hago ahora?"), respóndele considerando esta etapa.`
+    : "";
+  return `${BASE}\n\nPerfil actual: ${POR_ROL[ctx.rol] ?? POR_ROL.candidato}\n${identidad}${etapa}`;
 }

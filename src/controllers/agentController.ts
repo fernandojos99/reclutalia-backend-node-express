@@ -22,6 +22,7 @@ const chatSchema = z
     rol: z.enum(["admin", "formador", "candidato"]),
     formadorId: z.string().max(50).optional(),
     candId: z.number().int().optional(),
+    etapa: z.string().max(300).optional(),
   })
   .strict();
 
@@ -50,8 +51,8 @@ export const agentController = {
       res.status(400).json({ message: "Datos inválidos", details: parsed.error.format() });
       return;
     }
-    const { sessionId, mensaje, rol, formadorId, candId } = parsed.data;
-    const ctx: AgentContext = { rol, formadorId, candId };
+    const { sessionId, mensaje, rol, formadorId, candId, etapa } = parsed.data;
+    const ctx: AgentContext = { rol, formadorId, candId, etapa };
     const owner = ownerDe(rol, formadorId, candId);
 
     // Cabeceras SSE.
