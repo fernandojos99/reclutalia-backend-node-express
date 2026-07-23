@@ -5,7 +5,6 @@
  */
 import { chatCompletion, type ChatMessage } from "./deepseek";
 import { runTool, toolsForRole, type AgentContext } from "./tools";
-import { trimHistory } from "./sessions";
 
 export type AgentEvent =
   | { type: "status"; text: string }
@@ -45,7 +44,6 @@ export async function runAgent(
     if (calls.length === 0) {
       // Respuesta final del modelo.
       emit({ type: "token", text: assistant.content ?? "" });
-      trimHistory(session);
       emit({ type: "done" });
       return;
     }

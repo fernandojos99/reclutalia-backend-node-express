@@ -55,6 +55,13 @@ const anyObj = (description: string) => ({ type: "object", description, addition
 /** Quita claves undefined de un objeto de "campos a cambiar". */
 const limpio = (o: Record<string, unknown>) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
 
+/** Evaluación de la entrevista por icono → escala interna (1 negativa / 3 neutral / 5 positiva). */
+const CALIF_ICONO: Record<string, number> = {
+  negativa: 1, negativo: 1, mala: 1, malo: 1,
+  neutral: 3, neutra: 3, regular: 3,
+  positiva: 5, positivo: 5, buena: 5, bueno: 5,
+};
+
 /** Requisito con valores por defecto; se le hace merge de los campos provistos por el LLM. */
 const defaultRequisito = (over: Record<string, unknown>): Requisito =>
   ({
@@ -369,10 +376,13 @@ export const TOOLS: ToolDef[] = [
   },
   {
     name: "registrar_entrevista",
-    description: "Registra el resultado de la entrevista del formador con el candidato.",
+    description:
+      "Registra el resultado de la entrevista del formador con el candidato. La evaluación es uno de " +
+      "tres iconos: 'negativa', 'neutral' o 'positiva' (NO estrellas ni números). Si el formador lo pide, " +
+      "puedes generar/simular el resumen y el feedback para poder avanzar.",
     roles: ["admin", "formador"],
-    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), resumen: str("Resumen"), feedback: str("Feedback"), externa: bool("¿Entrevista externa?"), calificacion: int("Calificación 1-5 (estrellas)") }, ["vacId", "cid", "resumen", "feedback", "externa", "calificacion"]),
-    run: (a) => pipelineService.registrarEntrevista(String(a.vacId), Number(a.cid), { resumen: String(a.resumen), feedback: String(a.feedback), externa: !!a.externa, calificacion: Number(a.calificacion) }),
+    parameters: obj({ vacId: str("ID vacante"), cid: int("ID candidato"), resumen: str("Resumen de la entrevista"), feedback: str("Feedback para el candidato"), externa: bool("¿Entrevista externa/presencial?"), calificacion: str("Evaluación: 'negativa', 'neutral' o 'positiva' (iconos 👎/😐/👍)") }, ["vacId", "cid", "resumen", "feedback", "externa", "calificacion"]),
+    run: (a) => pipelineService.registrarEntrevista(String(a.vacId), Number(a.cid), { resumen: String(a.resumen), feedback: String(a.feedback), externa: !!a.externa, calificacion: CALIF_ICONO[String(a.calificacion).toLowerCase().trim()] ?? 3 }),
   },
   {
     name: "agendar_medico",

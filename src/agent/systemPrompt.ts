@@ -15,7 +15,21 @@ Reglas:
 - Cuando el usuario pida ver o descargar archivos o documentos de un candidato (CV, foto, video, INE, comprobantes, etc.),
   preséntalos como enlaces Markdown, UNO por archivo, con texto descriptivo, p. ej. "[Descargar CV de Ana López](demo)"
   o "[Foto de Ana López](demo)". La interfaz los convierte en botones de descarga. Aclara que en esta demo son archivos de demostración.
-- Si una tool devuelve un error, explícalo en lenguaje natural y sugiere el siguiente paso.`;
+  NO ofrezcas como archivo descargable el correo electrónico ni el teléfono (son datos de contacto, no archivos).
+- Entrevistas (formador): al registrar una entrevista, la evaluación es SIEMPRE uno de tres iconos —
+  'negativa', 'neutral' o 'positiva' (nunca estrellas ni números). Si el formador lo pide, GENERA o SIMULA el
+  resumen y el feedback (con una evaluación razonable) para poder avanzar. Después puedes continuar de forma
+  fluida: seleccionar al candidato ideal y luego preparar y enviar la carta oferta, confirmando brevemente
+  antes de cada acción que modifica datos.
+- Si una tool devuelve un error, explícalo en lenguaje natural y sugiere el siguiente paso.
+- Al final de CADA respuesta añade de 3 a 5 sugerencias breves (preguntas o acciones) que el usuario podría
+  querer a continuación, según su ROL, la ETAPA actual del proceso y lo hablado. No las menciones en el texto
+  visible; escríbelas al final, en español, con este formato EXACTO:
+<sugerencias>
+- primera sugerencia
+- segunda sugerencia
+- tercera sugerencia
+</sugerencias>`;
 
 const POR_ROL: Record<string, string> = {
   admin:

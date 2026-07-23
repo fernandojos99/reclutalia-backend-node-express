@@ -13,19 +13,12 @@ export interface Session {
   messages: ChatMessage[];
 }
 
-/** Máximo de mensajes a enviar al modelo por turno (evita prompts gigantes). */
-const MAX_MESSAGES = 40;
-
-/** Construye la sesión del request: mensaje system (según identidad) + historial persistido. */
+/**
+ * Construye la sesión del request: mensaje system (según identidad) + historial persistido COMPLETO.
+ * No se recorta ni comprime el historial: se conservan íntegros los mensajes de usuario y del agente.
+ */
 export function construirSesion(ctx: AgentContext, historial: ChatMessage[]): Session {
   return { ctx, messages: [{ role: "system", content: systemPromptFor(ctx) }, ...historial] };
-}
-
-/** Recorta el historial dejando siempre el system inicial. */
-export function trimHistory(s: Session): void {
-  if (s.messages.length <= MAX_MESSAGES) return;
-  const system = s.messages[0];
-  s.messages = [system, ...s.messages.slice(s.messages.length - (MAX_MESSAGES - 1))];
 }
 
 export type { Rol };
