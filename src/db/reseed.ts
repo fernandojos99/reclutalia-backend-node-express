@@ -24,7 +24,9 @@ export async function reseedDatabase(): Promise<ReseedResultado> {
   if (db) {
     const json = (v: unknown) => db.json(v as Parameters<typeof db.json>[0]);
     await db.begin(async (tx) => {
-      // Vaciar todo.
+      // Vaciar todo (incluidas las conversaciones del chat: reset deja la app como recién instalada).
+      await tx`delete from chat_mensajes`;
+      await tx`delete from chat_sesiones`;
       await tx`delete from notificaciones`;
       await tx`delete from vacantes`;
       await tx`delete from candidatos`;

@@ -1,12 +1,18 @@
 /**
  * Controlador del agente. Expone el chat por SSE (Server-Sent Events), NO websockets.
  * El front envía el mensaje + identidad por POST y lee la respuesta como stream SSE.
+ *
+ * La memoria de conversación es PERSISTENTE en la BD (chat_sesiones / chat_mensajes): en cada
+ * mensaje se reconstruye la sesión desde el historial guardado y al terminar se guardan los
+ * mensajes nuevos. Así sobrevive a cold starts / redeploys.
  */
 import type { Request, Response } from "express";
 import { z } from "zod";
-import { getSession } from "../agent/sessions";
+import { construirSesion } from "../agent/sessions";
 import { runAgent, type AgentEvent } from "../agent/runner";
 import type { AgentContext } from "../agent/tools";
+import { ownerDe } from "../agent/owner";
+import { chatRepository } from "../db/chatRepository";
 import { env } from "../config/env";
 
 const chatSchema = z
@@ -46,6 +52,7 @@ export const agentController = {
     }
     const { sessionId, mensaje, rol, formadorId, candId } = parsed.data;
     const ctx: AgentContext = { rol, formadorId, candId };
+    const owner = ownerDe(rol, formadorId, candId);
 
     // Cabeceras SSE.
     res.status(200);
@@ -55,12 +62,32 @@ export const agentController = {
     res.setHeader("X-Accel-Buffering", "no"); // evita buffering en proxies (nginx/vercel)
     res.flushHeaders?.();
 
-    const session = getSession(sessionId, ctx);
+    // Reconstruir la sesión desde el historial persistido.
+    let historial: Awaited<ReturnType<typeof chatRepository.getMensajes>> = [];
+    try {
+      historial = await chatRepository.getMensajes(sessionId);
+    } catch (e) {
+      console.error("[chat] error al leer historial:", (e as Error).message);
+    }
+    const session = construirSesion(ctx, historial);
+    const baseLen = session.messages.length; // system + historial (antes del mensaje nuevo)
 
     try {
       await runAgent(session, mensaje, (e) => sseSend(res, e));
     } catch (e) {
       sseSend(res, { type: "error", text: (e as Error).message });
+    }
+
+    // Persistir los mensajes nuevos de este turno (best-effort: no romper la respuesta si falla).
+    try {
+      const nuevos = session.messages.slice(baseLen);
+      if (nuevos.length) {
+        await chatRepository.asegurar(sessionId, owner, mensaje.slice(0, 60));
+        await chatRepository.agregarMensajes(sessionId, nuevos);
+        await chatRepository.tocar(sessionId, mensaje);
+      }
+    } catch (e) {
+      console.error("[chat] error al persistir historial:", (e as Error).message);
     } finally {
       res.end();
     }

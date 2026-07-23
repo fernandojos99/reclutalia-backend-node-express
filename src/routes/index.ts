@@ -6,6 +6,7 @@ import { candidatoController } from "../controllers/candidatoController";
 import { poolController } from "../controllers/poolController";
 import { formadorController, notificacionController } from "../controllers/lecturaControllers";
 import { agentController } from "../controllers/agentController";
+import { chatController } from "../controllers/chatController";
 import { adminController } from "../controllers/adminController";
 
 export const apiRouter = Router();
@@ -18,6 +19,14 @@ apiRouter.post("/admin/reset-seed", adminController.resetSeed);
 // ── Agente IA (chat por SSE) ──
 apiRouter.post("/agente/chat", agentController.chat);
 apiRouter.get("/agente/diag", agentController.diag); // diagnóstico temporal
+
+// ── Sesiones de chat persistentes (multi-sesión por usuario/rol) ──
+apiRouter.get("/agente/sesiones", chatController.listar);
+apiRouter.post("/agente/sesiones", chatController.crear);
+apiRouter.patch("/agente/sesiones/:id", chatController.renombrar);
+apiRouter.delete("/agente/sesiones/:id", chatController.eliminar);
+apiRouter.get("/agente/sesiones/:id/mensajes", chatController.mensajes);
+
 apiRouter.get("/catalogos", catalogoController.listar);
 
 apiRouter.use("/vacantes", vacanteRoutes);
