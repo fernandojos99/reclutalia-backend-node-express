@@ -108,7 +108,44 @@ export const SEED_VACANTES: Vacante[] = [
     id: "V-1042", estado: "asignada", formadorId: "F1", creada: "01 jul 2026", creadaTs: new Date("2026-07-01").getTime(), pipeline: {}, historial: [], cambios: null, archivados: [],
     req: crearRequisito({
       titulo: "Cajero Supervisor", area: "Atención a Clientes",
-      descripcion: "Supervisa la operación de cajas en sucursal: arqueos, manejo de efectivo, apertura y cierre de cajas, y atención al cliente. Da coaching a un equipo de cajeros y asegura cuadres correctos y una experiencia de servicio excelente.",
+      descripcion: `**Objetivo del puesto**
+
+Garantizar que el cliente reciba una excelente atención y servicio, realizando transacciones rápidas, precisas y eficientes.
+
+**Funciones principales**
+
+- Controlar la operación diaria en caja para garantizar el servicio a clientes y usuarios, así como las metas de productividad.
+- Eficientizar los costos por transacción.
+- Custodiar el efectivo y documentos con valor en caja fuerte y bóveda, así como cumplir con las medidas de seguridad y límites de efectivo establecidos.
+- Cumplir y hacer cumplir la normatividad de Banco de México, las políticas y procedimientos de caja de BAZ y la metodología 7's.
+- Atender los servicios de traslado de valores y aclarar sus diferencias.
+- Vigilar los límites de efectivo en resguardo y necesarios para operar.
+- Administrar y resguardar todos los valores operados en el búnker, asegurando cero faltantes.
+- Atender en ventanilla cuando la operación lo requiera.
+- Brindar la mejor experiencia física a los clientes: rápido, amable y sin errores, para generar una relación a largo plazo con los clientes.
+
+**Perfil ideal del candidato**
+
+- Experiencia de un año desempeñando actividades en caja y atención al cliente.
+- Habilidad en el manejo de efectivo.
+- Experiencia en manejo de personal.
+- Conocimiento de normas bancarias.
+- Disponibilidad de rolar turnos.
+- Honestidad en el desempeño de sus funciones.
+
+**Oferta de valor**
+
+- Sueldo fijo semanal desde: $2,400 semanal.
+- Comisiones semanales de: $1,200 pesos.
+- Prestaciones de ley: vacaciones iniciando con 12 días al año, prima vacacional del 25% anual, aguinaldo de 15 días al año, el cual aumenta de acuerdo a tu antigüedad.
+- Condiciones laborales: horario de 8 horas diarias de lunes a domingo con un día de descanso entre semana. Horario rotativo semanalmente. Un día de descanso al mes en fin de semana.
+- Seguro de vida que incrementa conforme a percepciones y antigüedad.
+- Beneficios del puesto: plan de entrenamiento acorde al puesto, así como para el desarrollo de habilidades personales. Inscripción a programas de gobierno para regularizar tus estudios de Bachillerato. Convenios con universidades para continuar con tus estudios.
+- Beneficios financieros: adelanto de nómina, acceso a tarjeta de crédito, descuentos desde el 10% en productos dentro de tiendas Elektra y Salinas & Rocha en compras de contado desde el primer día, y a crédito a partir de los 9 meses de antigüedad. Crédito personal con tasa preferencial a partir de los 2 años. Cambio de divisas. Cuentas de inversión. Caja de ahorro.
+- Servicios: acceso al nutriólogo, psicólogo, odontólogo, biblioteca, concursos y programas para mejorar tu salud, consejos y acompañamiento en tus logros, nuevos integrantes en la familia y celebraciones importantes.
+- Promociones y convenios para ti y tu familia: descuentos en gimnasios, cines, centros de entretenimiento, conciertos, restaurantes, tiendas departamentales, ópticas, laboratorios, clínicas, colegios, escuelas de idiomas, universidades, aerolíneas, viajes, agencias automotrices y guarderías.
+
+**¡Atrévete a ser parte de nuestro equipo!**`,
       nivelPuesto: "Senior", anosExp: 3, espRequeridas: ["Servicio al Cliente"],
       areasConocimiento: ["Administración de Empresas", "Ventas"], turno: "Turno Matutino",
       hardSkills: ["Excel avanzado", "CRM"], softSkills: ["Empatía", "Comunicación efectiva"],
@@ -116,20 +153,6 @@ export const SEED_VACANTES: Vacante[] = [
       ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX", radioKm: 25,
       salarioMin: 14000, salarioMax: 19000, horario: "9:00 – 18:00", numVacantes: 2,
       tipoSede: "Sucursal", sede: "Sucursal Centro Histórico (CDMX)", unidadNegocio: "Operación de Sucursales · Banca de Consumo", edadMin: 22, edadMax: 50,
-    }),
-  },
-  {
-    id: "V-1038", estado: "abierta", formadorId: "F1", creada: "24 jun 2026", creadaTs: new Date("2026-06-24").getTime(), pipeline: {}, historial: ["Aprobada por el formador el 26 jun 2026"], cambios: null, archivados: [],
-    req: crearRequisito({
-      titulo: "Coordinador de Atención a Clientes", area: "Atención a Clientes",
-      descripcion: "Liderar una célula de 20 agentes de atención omnicanal, asegurando niveles de servicio, calidad y coaching continuo al equipo.",
-      nivelPuesto: "Senior", anosExp: 4, espRequeridas: ["Servicio al Cliente", "Cobranza"],
-      areasConocimiento: ["Administración de Empresas", "Comunicación"], turno: "Turno Mixto",
-      hardSkills: ["Zendesk", "CRM", "Excel avanzado"], softSkills: ["Liderazgo", "Tolerancia a la presión", "Empatía"],
-      aptitudes: ["Orientación al servicio", "Liderazgo de equipos"],
-      ubicacionTrabajo: "CDMX", modalidad: "Presencial", ubicacionCandidato: "CDMX", radioKm: 40,
-      salarioMin: 17000, salarioMax: 22000, horario: "8:00 – 17:00", numVacantes: 1, examenMedico: true,
-      tipoSede: "Sucursal", sede: "Sucursal Centro Histórico (CDMX)", unidadNegocio: "Atención Omnicanal", edadMin: 25, edadMax: 50,
     }),
   },
   {
